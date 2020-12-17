@@ -1,4 +1,5 @@
 const {$} = require('./web-libs');
+const _ = require('lodash');
 const {extend} = require('./isnap-util.js');
 
 // snapAdapter = require('./snap-adapter');
@@ -9,6 +10,14 @@ const Grab = window.Grab = {};
 const snapFrame = document.getElementsByTagName("iframe")[0];
 
 const serverUrl = 'http://localhost:3000';
+
+const fireKey = function(key)
+{
+    Grab.ide.stage.fireKeyEvent(key);
+    setTimeout(() => Grab.ide.stage.removePressedKey(key), 
+                _.random(20,60));
+}
+
 const loadAndRun = async function()
 {
     const currentProjectName = "pong.xml";
@@ -18,16 +27,29 @@ const loadAndRun = async function()
         url: `${serverUrl}/scratch_project/${currentProjectName}`,
         dataType: 'text'
     }));
-    
+
     Grab.ide.rawOpenProjectString(project);
     Grab.ide.toggleAppMode(true);
 
+    console.log(Grab.ide.stage);
+
+    Grab.startTime = Date.now();
     Grab.trace = [];
+    Grab.randomInput = setInterval(
+        () => {
+            const toss = _.random(-1, 1);
+            if (toss < 0) {
+                fireKey('left arrow');
+            } else if (toss > 0) {
+                fireKey('right arrow');
+            }
+        }, 100)
     Grab.ide.pressStart();
     await new Promise(resolve =>
                         setTimeout(() => { 
-                        Grab.ide.stopAllScripts()
-                            resolve(true)
+                        Grab.ide.stopAllScripts();
+                        clearInterval(Grab.randomInput);
+                        resolve(true);
                         }, 3000)
                      );
     await $.post(`${serverUrl}/save_trace/${i}`, {
@@ -49,6 +71,7 @@ const step = function()
     // => true
     // console.log(Grab.ide.stage.children[2] instanceof Grab.top.SpriteMorph);
     // => true 
+    
 }
 
 snapFrame.onload = function()
@@ -61,17 +84,23 @@ snapFrame.onload = function()
     extend(Grab.top.Process, 'evaluateBlock', 
         function (base, block, argCount) {
             const sprite = this.context.receiver;
+            const stage = Grab.ide.stage;
             Grab.trace.push({
+                clockTime: ((Date.now() - Grab.startTime)/1000).toFixed(3),
                 sprite: { 
                     name: sprite.name,
                     x: sprite.xPosition(),
                     y: sprite.yPosition(),
                     size: sprite.size,
                     direction: sprite.direction(),
-                }
+                    variables: _.cloneDeep(sprite.variables.vars),
+                },
+                // TODO: convert to array of keys which maps to true
+                keysDown: _.cloneDeep(stage.keysPressed),
+                stageVariables: _.cloneDeep(stage.variables.vars),
             });
             base.call(this, block, argCount);
     })
 }
 $('#run').on('click', loadAndRun);
-$('#step').on('click', step);
+//$('#step').on('click', step);
