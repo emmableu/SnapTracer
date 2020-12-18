@@ -1,6 +1,8 @@
 const {$} = require('./web-libs');
 const _ = require('lodash');
+const hash = require('object-hash');
 const {extend} = require('./isnap-util.js');
+
 
 // snapAdapter = require('./snap-adapter');
 window.$ = $;
@@ -80,6 +82,7 @@ snapFrame.onload = function()
     Grab.world = Grab.top.world;
     Grab.ide = Grab.world.children[0];
     Grab.ide.toggleAppMode(true);
+    Grab.hash = hash;
 
     extend(Grab.top.Process, 'evaluateBlock', 
         function (base, block, argCount) {
@@ -93,6 +96,10 @@ snapFrame.onload = function()
                     y: sprite.yPosition(),
                     size: sprite.size,
                     direction: sprite.direction(),
+                    touching: stage.children
+                                   .filter(c => (c != sprite))
+                                   .filter(c => (c instanceof Grab.top.SpriteMorph))
+                                   .filter(c => sprite.isTouching(c)).map(c => c.name),
                     variables: _.cloneDeep(sprite.variables.vars),
                 },
                 // TODO: convert to array of keys which maps to true
