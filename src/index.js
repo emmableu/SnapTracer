@@ -11,9 +11,8 @@ const snapFrame = document.getElementsByTagName('iframe')[0];
 const serverUrl = 'http://localhost:3000';
 
 // Not in used
-const _fireKeyu = function (key) {
+const fireKey = function (key) {
     Grab.snapAdapter.stage.fireKeyEvent(key);
-    console.log(key);
     setTimeout(() => Grab.snapAdapter.stage.removePressedKey(key),
         _.random(20, 60));
 };
@@ -30,24 +29,22 @@ const loadAndRun = async function () {
 
     console.log(Grab.snapAdapter.stage);
 
-    /*
+    
     Grab.randomInput = setInterval(
         () => {
             const toss = _.random(-1, 1);
-            console.log(toss);
             if (toss < 0) {
                 fireKey('left arrow');
             } else if (toss > 0) {
                 fireKey('right arrow');
             }
         }, 100);
-    */
-        
+    
     Grab.snapAdapter.start();
     await new Promise(resolve =>
         setTimeout(() => {
             Grab.snapAdapter.end();
-            // clearInterval(Grab.randomInput);
+            clearInterval(Grab.randomInput);
             resolve(true);
         }, 3000)
     );

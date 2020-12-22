@@ -20,11 +20,6 @@ class SnapAdapter {
         this.ide = top.world.children[0];
 
         /**
-         * @type {StageMorph}
-         */
-        this.stage = this.ide.stage;
-
-        /**
          * @type {number}
          */
         this.startTime = 0;
@@ -59,17 +54,21 @@ class SnapAdapter {
      */
     loadProject (projectString) {
         this.ide.rawOpenProjectString(projectString);
+        this.ide.toggleAppMode(true);
     }
 
     start () {
         this.trace = [];
-        this.ide.pressStart();
-        this.ide.toggleAppMode(true);
         this.startTime = Date.now();
+        this.ide.pressStart();
     }
 
     end () {
         this.ide.stopAllScripts();
+    }
+
+    get stage () {
+        return this.ide.stage;
     }
 
     initInstrumenter () {
