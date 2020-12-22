@@ -1,7 +1,7 @@
 {
   "name": "grab",
   "version": "1.0.0",
-  "description": "Grab: a Snap! dynamic instrumentation tool",
+  "description": "Grab: a Whisker port for Snap! with instrumentation",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,12 +13,14 @@
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "object-hash": "^2.0.3",
+    "seed-random": "^2.2.0",
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.15.0",
+    "eslint-config-scratch": "^6.0.0",
     "file-loader": "^6.2.0",
     "nodemon-webpack-plugin": "^4.3.2",
     "webpack": "^5.10.3",
