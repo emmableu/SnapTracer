@@ -75,13 +75,13 @@ const load = async function () {
                     console.log('------');
                     console.log(paddleOldY.time);
                     console.log(Date.now());
-                    console.log(paddle.xPosition());
+                    console.log(paddle.posY);
                     console.log(paddleOldY.val);
                     console.log('Not moving down!');
                 }
             },
             () => ({val: paddle.posY, time: Date.now()}),
-            5,
+            50,
             false)
     );
     Grab.snapAdapter.stepper.addTrigger(
@@ -96,7 +96,7 @@ const load = async function () {
                     console.log('------');
                     console.log(paddleOldY.time);
                     console.log(Date.now());
-                    console.log(paddle.xPosition());
+                    console.log(paddle.posY);
                     console.log(paddleOldY.val);
                     console.log('Not moving up!');
                 }
