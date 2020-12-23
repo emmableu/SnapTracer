@@ -1,5 +1,4 @@
 node_modules
-dist/Snap/*
-!dist/Snap/.
+dist/
 .DS_Store
 .idea/
