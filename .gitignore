@@ -1,5 +1,4 @@
 node_modules
-dist/Snap
 dist/
 !dist/index.html
 .DS_Store
