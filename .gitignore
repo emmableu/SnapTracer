@@ -1,4 +1,5 @@
 node_modules
+!dist/index.html
 dist/
 .DS_Store
 .idea/
