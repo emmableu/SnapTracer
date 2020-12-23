@@ -1,5 +1,6 @@
 const {extend} = require('./isnap-util.js');
 const _ = require('lodash');
+const Stepper = require('./stepper.js');
 const Sprites = require('./sprites.js');
 
 class SnapAdapter {
@@ -35,9 +36,19 @@ class SnapAdapter {
         this.project = null;
 
         /**
+         * @type {Boolean}
+         */
+        this.projectStarted = false;
+
+        /**
          * @type {Sprites}
          */
         this.sprites = new Sprites(this);
+
+        /**
+         * @type {Stepper}
+         */
+        this.stepper = new Stepper(this);
 
         
         this.initGrab();
@@ -57,17 +68,33 @@ class SnapAdapter {
         this.ide.toggleAppMode(true);
     }
 
-    start () {
+    async start () {
         this.trace = [];
         this.startTime = Date.now();
         this.ide.pressStart();
+        this.projectStarted = true;
+        await new Promise(resolve =>
+            setTimeout(() => {
+                resolve(true);
+            }, 1)
+        );
     }
 
     end () {
         this.ide.stopAllScripts();
+        this.projectStarted = false;
+    }
+
+    pause () {
+        this.stage.threads.pauseAll();
+    }
+
+    resume () {
+        this.stage.threads.resumeAll();
     }
 
     get stage () {
+        // stage may update after loading the project
         return this.ide.stage;
     }
 

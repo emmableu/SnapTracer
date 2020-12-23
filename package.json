@@ -1,7 +1,7 @@
 {
   "name": "grab",
   "version": "1.0.0",
-  "description": "Grab: a Whisker port for Snap! with instrumentation",
+  "description": "Grab: a Whisker inspired dynamic testing framework for Snap! with instrumentation",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

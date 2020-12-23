@@ -28404,6 +28404,7 @@ module.exports = {
 
 const {extend} = __webpack_require__(/*! ./isnap-util.js */ "./src/isnap-util.js");
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+const Stepper = __webpack_require__(/*! ./stepper.js */ "./src/stepper.js");
 const Sprites = __webpack_require__(/*! ./sprites.js */ "./src/sprites.js");
 
 class SnapAdapter {
@@ -28439,9 +28440,19 @@ class SnapAdapter {
         this.project = null;
 
         /**
+         * @type {Boolean}
+         */
+        this.projectStarted = false;
+
+        /**
          * @type {Sprites}
          */
         this.sprites = new Sprites(this);
+
+        /**
+         * @type {Stepper}
+         */
+        this.stepper = new Stepper(this);
 
         
         this.initGrab();
@@ -28461,17 +28472,33 @@ class SnapAdapter {
         this.ide.toggleAppMode(true);
     }
 
-    start () {
+    async start () {
         this.trace = [];
         this.startTime = Date.now();
         this.ide.pressStart();
+        this.projectStarted = true;
+        await new Promise(resolve =>
+            setTimeout(() => {
+                resolve(true);
+            }, 1)
+        );
     }
 
     end () {
         this.ide.stopAllScripts();
+        this.projectStarted = false;
+    }
+
+    pause () {
+        this.stage.threads.pauseAll();
+    }
+
+    resume () {
+        this.stage.threads.resumeAll();
     }
 
     get stage () {
+        // stage may update after loading the project
         return this.ide.stage;
     }
 
@@ -28524,6 +28551,235 @@ class Sprites {
 }
 
 module.exports = Sprites;
+
+
+/***/ }),
+
+/***/ "./src/stepper.js":
+/*!************************!*\
+  !*** ./src/stepper.js ***!
+  \************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const {_Triggeru, Callback} = __webpack_require__(/*! ./trigger */ "./src/trigger.js");
+
+class Stepper {
+
+    constructor (snapAdapter) {
+        /**
+         * @type {SnapAdapter}
+         */
+        this.snapAdapter = snapAdapter;
+
+        /**
+         * @type {Trigger[]}
+         */
+        this.triggers = [];
+
+        /**
+         * @type {Boolean}
+         */
+        this.running = false;
+
+        /**
+         * @type {Callback[]}
+         */
+        this._callbacks = [];
+
+        /**
+         * @type {()=>}
+         */
+        this._stopHandle = false;
+
+        /**
+         * @type {number}
+         */
+        this._stepDuration = 5;
+        
+    }
+
+    addTrigger (trigger) {
+        this.triggers.unshift(trigger);
+    }
+
+    async run () {
+        if (!this.snapAdapter.projectStarted) {
+            await this.snapAdapter.start();
+        }
+        this.running = true;
+        while (this.running) {
+            await this.step();
+        }
+        
+    }
+
+    stop () {
+        console.log('stop stepper');
+        // console.log(this._stopHandle);
+        // this._stopHandle(this.STOP_SIGNAL);
+        // this._stopHandle = null;
+        this.running = false;
+    }
+
+    step () {
+
+        // select triggers with precondition satisfied
+        const firingTriggers = this.triggers.filter(t => t.active)
+            .filter(t => t.precondition());
+        // get the callbacks of these triggers
+        const callbacks = firingTriggers
+            .map(t => {
+                t.deactivate();
+                return new Callback(
+                    t.stateSaver(), // save the current state
+                    t.delay,
+                    t.callback,
+                    t);
+            });
+        // add all activated callbacks to the callback queues
+        this._callbacks.unshift(...callbacks);
+
+        // fire callback if delay reaches 0
+        this._callbacks.forEach(c => c.countdown());
+
+        // cleanup callbacks and triggers that are no longer alive
+        this._callbacks = this._callbacks.filter(c => c.alive);
+        this.triggers = this.triggers.filter(t => t.alive);
+        this.snapAdapter.resume();
+        return new Promise(resolve =>
+            setTimeout(() => {
+                this.snapAdapter.pause();
+                resolve(this.STEP_FINISHED);
+            }, this._stepDuration)
+        );
+    }
+    
+    static get STOP_SIGNAL () {
+        return 'stop';
+    }
+    
+    static get STEP_FINISHED () {
+        return 'step_done';
+    }
+}
+
+module.exports = Stepper;
+
+
+/***/ }),
+
+/***/ "./src/trigger.js":
+/*!************************!*\
+  !*** ./src/trigger.js ***!
+  \************************/
+/***/ ((module) => {
+
+class Trigger {
+
+    constructor (pre, callback, stateSaver = () => null, delay = 0, once = true) {
+
+        /**
+         * The predicate function starts the trigger
+         * @type{()=>Boolean}
+         */
+        this.precondition = pre;
+
+        /**
+         * The callback function of this trigger
+         * @type{(any)=>} takes a parameter that can be used to store the old state
+         */
+        this.callback = callback;
+
+        /**
+         * Function to save the old state for the callback
+         * @type{()=>any}
+         */
+        this.stateSaver = stateSaver;
+
+        /**
+         * How long to delay fire the callback when precondition is satisfied
+         * 0 means fire immediately
+         * @type{number}
+         */
+        this.delay = delay;
+
+        /**
+         * whether the trigger is thrown out after callback fired
+         * @type{Boolean}
+         */
+        this.once = once;
+
+        /**
+         * @type{Boolean}
+         * @private
+         */
+        this._active = true;
+
+        /**
+         * if this trigger is still alive
+         * @type{Boolean}
+         * @private
+         */
+        this._alive = true;
+    }
+
+    activate () {
+        this._active = true;
+    }
+
+    deactivate () {
+        this._active = false;
+    }
+
+    recycle () {
+        if (this.once) {
+            this._alive = false;
+        } else {
+            this.activate();
+        }
+    }
+
+    get active () {
+        return this._active;
+    }
+
+    get alive () {
+        return this._alive;
+    }
+
+}
+
+class Callback {
+
+    constructor (data, delay, callback, trigger) {
+
+        this._data = data;
+        this._delay = delay;
+        this._callback = callback;
+        this._trigger = trigger;
+    }
+
+    call () {
+        this._callback(this._data);
+        this._delay = -1;
+        this.trigger.recycle();
+    }
+
+    countdown () {
+        // _delay = 0 means to fire in the nearest cycle
+        this._delay--;
+        if (this._delay < 0) {
+            this.call();
+        }
+    }
+
+    get alive () {
+        return this._delay >= 0;
+    }
+
+}
+
+module.exports = {Trigger, Callback};
 
 
 /***/ }),
@@ -28658,7 +28914,9 @@ const loadAndRun = async function () {
             }
         }, 100);
     
-    Grab.snapAdapter.start();
+    Grab.snapAdapter.stepper.run();
+    //Grab.snapAdapter.start();
+    /*
     await new Promise(resolve =>
         setTimeout(() => {
             Grab.snapAdapter.end();
@@ -28671,31 +28929,34 @@ const loadAndRun = async function () {
         coverage: 0,
         trace: JSON.stringify(Grab.snapAdapter.trace)
     });
+    */
 };
 
 // Not in Use
-const _stepu = async function () {
+const step = async function () {
     //Grab.ide.stage.step();
     // console.log(Grab.ide.stage.children[2].variables.owner instanceof Grab.top.SpriteMorph);
     // => true
     // console.log(Grab.ide.stage.children[2] instanceof Grab.top.SpriteMorph);
     // => true
 
-    Grab.ide.stage.resumeAll();
+    Grab.snapAdapter.stepper.stop();
+    /*
+    Grab.snapAdapter.resume();
     await new Promise(resolve =>
         setTimeout(() => {
-            Grab.ide.stage.pauseAll();
+            Grab.snapAdapter.pause();
             resolve(true);
-        }, 1000)
+        }, 10)
     );
-    
+    */
 };
 
 snapFrame.onload = function () {
     Grab.snapAdapter = new SnapAdapter(this.contentWindow);
 };
 $('#run').on('click', loadAndRun);
-// $('#step').on('click', step);
+$('#step').on('click', step);
 
 })();
 

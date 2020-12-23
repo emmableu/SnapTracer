@@ -40,7 +40,9 @@ const loadAndRun = async function () {
             }
         }, 100);
     
-    Grab.snapAdapter.start();
+    Grab.snapAdapter.stepper.run();
+    //Grab.snapAdapter.start();
+    /*
     await new Promise(resolve =>
         setTimeout(() => {
             Grab.snapAdapter.end();
@@ -53,28 +55,31 @@ const loadAndRun = async function () {
         coverage: 0,
         trace: JSON.stringify(Grab.snapAdapter.trace)
     });
+    */
 };
 
 // Not in Use
-const _stepu = async function () {
+const step = async function () {
     //Grab.ide.stage.step();
     // console.log(Grab.ide.stage.children[2].variables.owner instanceof Grab.top.SpriteMorph);
     // => true
     // console.log(Grab.ide.stage.children[2] instanceof Grab.top.SpriteMorph);
     // => true
 
-    Grab.ide.stage.resumeAll();
+    Grab.snapAdapter.stepper.stop();
+    /*
+    Grab.snapAdapter.resume();
     await new Promise(resolve =>
         setTimeout(() => {
-            Grab.ide.stage.pauseAll();
+            Grab.snapAdapter.pause();
             resolve(true);
-        }, 1000)
+        }, 10)
     );
-    
+    */
 };
 
 snapFrame.onload = function () {
     Grab.snapAdapter = new SnapAdapter(this.contentWindow);
 };
 $('#run').on('click', loadAndRun);
-// $('#step').on('click', step);
+$('#step').on('click', step);
