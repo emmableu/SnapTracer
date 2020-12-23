@@ -43,9 +43,9 @@ class Sprite {
 
     get touching (){
         return this.snapAdapter.stage.children
-            .filter(c => (c !== sprite))
+            .filter(c => (c !== this.sprite))
             .filter(c => (c instanceof this.snapAdapter.top.SpriteMorph))
-            .filter(c => sprite.isTouching(c))
+            .filter(c => this.sprite.isTouching(c))
             .map(c => c.name);
     }
 
@@ -57,20 +57,21 @@ class Sprite {
         let padding = 10,
             fb = this.sprite.nestingBounds(),
             stage = this.snapAdapter.stage,
-            edge_touched = [];
+            edges_touched = [];
 
         if (fb.left() < stage.left() + padding) {
-            edge_touched.push('left');
+            edges_touched.push('left');
         }
         if (fb.right() > stage.right() - padding) {
-            edge_touched.push('right');
+            edges_touched.push('right');
         }
         if (fb.top() < stage.top() - padding) {
-            edge_touched.push('up');
+            edges_touched.push('up');
         }
         if (fb.bottom() > stage.bottom() + padding) {
-            edge_touched.push('bottom');
+            edges_touched.push('bottom');
         }
+        return edges_touched
 
     }
 

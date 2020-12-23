@@ -64,44 +64,44 @@ const load = async function () {
 
     // const paddle = Grab.snapAdapter.stage.children[1];
     Grab.snapAdapter.stepper.addTrigger(
-        new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('left arrow'),
-            paddleOldX => {
-                if (paddle.xPosition() < paddleOldX.val) {
+        new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('down arrow'),
+            paddleOldY => {
+                if (paddle.posY < paddleOldY.val) {
                     console.log('------');
-                    console.log(paddleOldX.time);
+                    console.log(paddleOldY.time);
                     console.log(Date.now());
-                    console.log('Paddle moves left');
+                    console.log('Paddle moves down');
                 } else {
                     console.log('------');
-                    console.log(paddleOldX.time);
+                    console.log(paddleOldY.time);
                     console.log(Date.now());
                     console.log(paddle.xPosition());
-                    console.log(paddleOldX.val);
-                    console.log('Not moving left!');
+                    console.log(paddleOldY.val);
+                    console.log('Not moving down!');
                 }
             },
-            () => ({val: paddle.posX, time: Date.now()}),
+            () => ({val: paddle.posY, time: Date.now()}),
             5,
             false)
     );
     Grab.snapAdapter.stepper.addTrigger(
-        new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('right arrow'),
-            paddleOldX => {
-                if (paddle.xPosition() > paddleOldX.val) {
+        new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('up arrow'),
+            paddleOldY => {
+                if (paddle.posY > paddleOldY.val) {
                     console.log('------');
-                    console.log(paddleOldX.time);
+                    console.log(paddleOldY.time);
                     console.log(Date.now());
-                    console.log('Paddle moves right');
+                    console.log('Paddle moves up');
                 } else {
                     console.log('------');
-                    console.log(paddleOldX.time);
+                    console.log(paddleOldY.time);
                     console.log(Date.now());
                     console.log(paddle.xPosition());
-                    console.log(paddleOldX.val);
-                    console.log('Not moving right!');
+                    console.log(paddleOldY.val);
+                    console.log('Not moving up!');
                 }
             },
-            () => ({val: paddle.posX(), time: Date.now()}),
+            () => ({val: paddle.posY, time: Date.now()}),
             5,
             false)
     );
@@ -109,7 +109,7 @@ const load = async function () {
     Grab.snapAdapter.stepper.addTrigger(
         new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
             ballOldDir => {
-                if (ball.direction() < ballOldDir.val) {
+                if (ball.dir !== ballOldDir.val) {
                     console.log('------');
                     console.log(ballOldDir.time);
                     console.log(Date.now());
@@ -118,7 +118,7 @@ const load = async function () {
                     console.log('------');
                     console.log(ballOldDir.time);
                     console.log(Date.now());
-                    console.log(ball.direction());
+                    console.log(ball.dir);
                     console.log(ballOldDir.val);
                     console.log('Ball does not turn on touching paddle!');
                 }
@@ -132,7 +132,7 @@ const load = async function () {
     Grab.snapAdapter.stepper.addTrigger(
         new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
             varOldVal => {
-                if (variables.getFirstVariableValue() < varOldVal.val) {
+                if (variables.getFirstVariableValue() !== varOldVal.val) {
                     console.log('------');
                     console.log(varOldVal.time);
                     console.log(Date.now());
@@ -141,7 +141,7 @@ const load = async function () {
                     console.log('------');
                     console.log(varOldVal.time);
                     console.log(Date.now());
-                    console.log(ball.direction());
+                    console.log(ball.dir);
                     console.log(varOldVal.val);
                     console.log('variable value did not change!');
                 }
@@ -155,7 +155,7 @@ const load = async function () {
     Grab.snapAdapter.stepper.addTrigger(
         new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['left', 'up', 'bottom']),
             ballOldDir => {
-                if (ball.direction() < ballOldDir.val) {
+                if (ball.dir !== ballOldDir.val) {
                     console.log('------');
                     console.log(ballOldDir.time);
                     console.log(Date.now());
@@ -164,7 +164,7 @@ const load = async function () {
                     console.log('------');
                     console.log(ballOldDir.time);
                     console.log(Date.now());
-                    console.log(ball.direction());
+                    console.log(ball.dir);
                     console.log(ballOldDir.val);
                     console.log('Ball does not turn on touching edge!');
                 }
@@ -178,7 +178,7 @@ const load = async function () {
     Grab.snapAdapter.stepper.addTrigger(
         new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['right']),
             varOldVal => {
-                if (variables.getFirstVariableValue() < varOldVal.val) {
+                if (variables.getFirstVariableValue() !== varOldVal.val) {
                     console.log('------');
                     console.log(varOldVal.time);
                     console.log(Date.now());
@@ -187,7 +187,7 @@ const load = async function () {
                     console.log('------');
                     console.log(varOldVal.time);
                     console.log(Date.now());
-                    console.log(ball.direction());
+                    console.log(ball.dir);
                     console.log(varOldVal.val);
                     console.log('variable value did not change!');
                 }

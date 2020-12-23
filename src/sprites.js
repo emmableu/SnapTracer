@@ -16,7 +16,7 @@ class Sprites {
         let allSprites = this.getAllSprites();
         for (let s of allSprites) {
             if (s.name === name) {
-                return new Sprite(s)
+                return new Sprite(this.snapAdapter, s)
             }
         }
     }

@@ -16,7 +16,7 @@ class Variables {
         let allValues = Object.keys(this.stageVariables)
             .map(v => ({
                 name: v,
-                value: stageVariables[v].value
+                value: this.stageVariables[v].value
             }));
         return allValues[0]
     }
