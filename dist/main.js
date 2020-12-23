@@ -28048,6 +28048,43 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
+/***/ "./src/inputs.js":
+/*!***********************!*\
+  !*** ./src/inputs.js ***!
+  \***********************/
+/***/ ((module) => {
+
+class Inputs {
+    
+    constructor (snapAdapter) {
+        /**
+         * @type{SnapAdapter}
+         */
+        this.snapAdapter = snapAdapter;
+
+    }
+    
+    inputKey (key, duration) {
+        this.snapAdapter.stage.fireKeyEvent(key);
+        setTimeout(() => this.snapAdapter.stage.removePressedKey(key),
+            duration);
+    }
+
+    isKeyDown (key) {
+        return this.keysDown.includes(key);
+    }
+
+    get keysDown () {
+        const keysPressed = this.snapAdapter.stage.keysPressed;
+        return Object.keys(keysPressed).filter(k => keysPressed[k]);
+    }
+
+}
+module.exports = Inputs;
+
+
+/***/ }),
+
 /***/ "./src/isnap-util.js":
 /*!***************************!*\
   !*** ./src/isnap-util.js ***!
@@ -28405,6 +28442,7 @@ module.exports = {
 const {extend} = __webpack_require__(/*! ./isnap-util.js */ "./src/isnap-util.js");
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 const Stepper = __webpack_require__(/*! ./stepper.js */ "./src/stepper.js");
+const Inputs = __webpack_require__(/*! ./inputs.js */ "./src/inputs.js");
 const Sprites = __webpack_require__(/*! ./sprites.js */ "./src/sprites.js");
 
 class SnapAdapter {
@@ -28454,6 +28492,11 @@ class SnapAdapter {
          */
         this.stepper = new Stepper(this);
 
+        /**
+         * @type {Inputs}
+         */
+        this.inputs = new Inputs(this);
+
         
         this.initGrab();
     }
@@ -28482,6 +28525,8 @@ class SnapAdapter {
                 resolve(true);
             }, 1)
         );
+        // don't know why need to start again
+        this.ide.pressStart();
     }
 
     end () {
@@ -28496,7 +28541,11 @@ class SnapAdapter {
     resume () {
         this.stage.threads.resumeAll();
     }
+    
 
+    /**
+     * @returns {StageMorphic} the Snap stage
+     */
     get stage () {
         // stage may update after loading the project
         return this.ide.stage;
@@ -28507,6 +28556,7 @@ class SnapAdapter {
         extend(this.top.Process, 'evaluateBlock',
             function (base, block, argCount) {
                 const sprite = this.context.receiver;
+                const stageVariables = that.ide.globalVariables.vars;
                 that.trace.push({
                     clockTime: ((Date.now() - that.startTime) / 1000).toFixed(3),
                     sprite: {
@@ -28523,8 +28573,12 @@ class SnapAdapter {
                         variables: _.cloneDeep(sprite.variables.vars)
                     },
                     // TODO: convert to array of keys which maps to true
-                    keysDown: _.cloneDeep(that.stage.keysPressed),
-                    stageVariables: _.cloneDeep(that.stage.variables.vars)
+                    keysDown: that.inputs.keysDown, //_.cloneDeep(that.stage.keysPressed),
+                    stageVariables: Object.keys(stageVariables)
+                        .map(v => ({
+                            name: v,
+                            value: stageVariables[v].value
+                        }))
                 });
                 base.call(this, block, argCount);
                 // eslint-disable-next-line semi
@@ -28654,10 +28708,6 @@ class Stepper {
         );
     }
     
-    static get STOP_SIGNAL () {
-        return 'stop';
-    }
-    
     static get STEP_FINISHED () {
         return 'step_done';
     }
@@ -28680,19 +28730,19 @@ class Trigger {
 
         /**
          * The predicate function starts the trigger
-         * @type{()=>Boolean}
+         * @type{() => Boolean}
          */
         this.precondition = pre;
 
         /**
          * The callback function of this trigger
-         * @type{(any)=>} takes a parameter that can be used to store the old state
+         * @type{(any) => } takes a parameter that can be used to store the old state
          */
         this.callback = callback;
 
         /**
          * Function to save the old state for the callback
-         * @type{()=>any}
+         * @type{() => any}
          */
         this.stateSaver = stateSaver;
 
@@ -28731,6 +28781,10 @@ class Trigger {
         this._active = false;
     }
 
+    /**
+     * discard this trigger if it is one-timed,
+     * reactivate it otherwise
+     */
     recycle () {
         if (this.once) {
             this._alive = false;
@@ -28762,7 +28816,7 @@ class Callback {
     call () {
         this._callback(this._data);
         this._delay = -1;
-        this.trigger.recycle();
+        this._trigger.recycle();
     }
 
     countdown () {
@@ -28775,6 +28829,10 @@ class Callback {
 
     get alive () {
         return this._delay >= 0;
+    }
+
+    static get ALWAYS () {
+        return () => true;
     }
 
 }
@@ -28875,6 +28933,7 @@ module.exports = {
 const {$} = __webpack_require__(/*! ./web-libs */ "./src/web-libs.js");
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 const SnapAdapter = __webpack_require__(/*! ./snap-adapter.js */ "./src/snap-adapter.js");
+const {Trigger} = __webpack_require__(/*! ./trigger.js */ "./src/trigger.js");
 
 window.$ = $;
 
@@ -28891,30 +28950,27 @@ const fireKey = function (key) {
         _.random(20, 60));
 };
 
-const loadAndRun = async function () {
-    const currentProjectName = 'pong.xml';
-    const i = 0;
+const load = async function () {
+    Grab.currentProjectName = 'pong_no_left.xml';
     snapFrame.contentWindow.focus();
+    
     const project = await Promise.resolve($.get({
-        url: `${serverUrl}/scratch_project/${currentProjectName}`,
+        url: `${serverUrl}/scratch_project/${Grab.currentProjectName}`,
         dataType: 'text'
     }));
+    
     Grab.snapAdapter.loadProject(project);
+    /*
+    await new Promise(resolve =>
+        setTimeout(() => {
+            resolve(true);
+        }, 100)
+    );
+    */
 
     console.log(Grab.snapAdapter.stage);
 
-    
-    Grab.randomInput = setInterval(
-        () => {
-            const toss = _.random(-1, 1);
-            if (toss < 0) {
-                fireKey('left arrow');
-            } else if (toss > 0) {
-                fireKey('right arrow');
-            }
-        }, 100);
-    
-    Grab.snapAdapter.stepper.run();
+    //Grab.snapAdapter.stepper.run();
     //Grab.snapAdapter.start();
     /*
     await new Promise(resolve =>
@@ -28930,10 +28986,72 @@ const loadAndRun = async function () {
         trace: JSON.stringify(Grab.snapAdapter.trace)
     });
     */
+
+    
+    const paddle = Grab.snapAdapter.stage.children[1];
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('left arrow'),
+            paddleOldX => {
+                if (paddle.xPosition() < paddleOldX.val) {
+                    console.log('------');
+                    console.log(paddleOldX.time);
+                    console.log(Date.now());
+                    console.log('Paddle moves left');
+                } else {
+                    console.log('------');
+                    console.log(paddleOldX.time);
+                    console.log(Date.now());
+                    console.log(paddle.xPosition());
+                    console.log(paddleOldX.val);
+                    console.log('Not moving left!');
+                }
+            },
+            () => ({val: paddle.xPosition(), time: Date.now()}),
+            5,
+            false)
+    );
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('right arrow'),
+            paddleOldX => {
+                if (paddle.xPosition() > paddleOldX.val) {
+                    console.log('------');
+                    console.log(paddleOldX.time);
+                    console.log(Date.now());
+                    console.log('Paddle moves right');
+                } else {
+                    console.log('------');
+                    console.log(paddleOldX.time);
+                    console.log(Date.now());
+                    console.log(paddle.xPosition());
+                    console.log(paddleOldX.val);
+                    console.log('Not moving right!');
+                }
+            },
+            () => ({val: paddle.xPosition(), time: Date.now()}),
+            5,
+            false)
+    );
+    
+};
+
+const run = function () {
+    /*Grab.randomInput = setInterval(
+        () => {
+            const toss = _.random(-1, 1);
+            if (toss < 0) {
+                fireKey('left arrow');
+            } else if (toss > 0) {
+                fireKey('right arrow');
+            }
+        }, 100);*/
+
+    //Grab.snapAdapter.projectStarted = true;
+    //Grab.snapAdapter.start();
+    Grab.snapAdapter.stepper.run();
 };
 
 // Not in Use
-const step = async function () {
+const stop = async function () {
     //Grab.ide.stage.step();
     // console.log(Grab.ide.stage.children[2].variables.owner instanceof Grab.top.SpriteMorph);
     // => true
@@ -28941,22 +29059,24 @@ const step = async function () {
     // => true
 
     Grab.snapAdapter.stepper.stop();
-    /*
-    Grab.snapAdapter.resume();
-    await new Promise(resolve =>
-        setTimeout(() => {
-            Grab.snapAdapter.pause();
-            resolve(true);
-        }, 10)
-    );
-    */
+    // clearInterval(Grab.randomInput);
+    // Grab.snapAdapter.resume();
+
+    const i = 0;
+    await $.post(`${serverUrl}/save_trace/${i}`, {
+        testName: Grab.currentProjectName,
+        coverage: 0,
+        trace: JSON.stringify(Grab.snapAdapter.trace)
+    });
 };
 
 snapFrame.onload = function () {
     Grab.snapAdapter = new SnapAdapter(this.contentWindow);
+
 };
-$('#run').on('click', loadAndRun);
-$('#step').on('click', step);
+$('#load').on('click', load);
+$('#run').on('click', run);
+$('#stop').on('click', stop);
 
 })();
 

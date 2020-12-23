@@ -1,6 +1,7 @@
 const {extend} = require('./isnap-util.js');
 const _ = require('lodash');
 const Stepper = require('./stepper.js');
+const Inputs = require('./inputs.js');
 const Sprites = require('./sprites.js');
 
 class SnapAdapter {
@@ -50,6 +51,11 @@ class SnapAdapter {
          */
         this.stepper = new Stepper(this);
 
+        /**
+         * @type {Inputs}
+         */
+        this.inputs = new Inputs(this);
+
         
         this.initGrab();
     }
@@ -78,6 +84,8 @@ class SnapAdapter {
                 resolve(true);
             }, 1)
         );
+        // don't know why need to start again
+        this.ide.pressStart();
     }
 
     end () {
@@ -92,7 +100,11 @@ class SnapAdapter {
     resume () {
         this.stage.threads.resumeAll();
     }
+    
 
+    /**
+     * @returns {StageMorphic} the Snap stage
+     */
     get stage () {
         // stage may update after loading the project
         return this.ide.stage;
@@ -103,6 +115,7 @@ class SnapAdapter {
         extend(this.top.Process, 'evaluateBlock',
             function (base, block, argCount) {
                 const sprite = this.context.receiver;
+                const stageVariables = that.ide.globalVariables.vars;
                 that.trace.push({
                     clockTime: ((Date.now() - that.startTime) / 1000).toFixed(3),
                     sprite: {
@@ -119,8 +132,12 @@ class SnapAdapter {
                         variables: _.cloneDeep(sprite.variables.vars)
                     },
                     // TODO: convert to array of keys which maps to true
-                    keysDown: _.cloneDeep(that.stage.keysPressed),
-                    stageVariables: _.cloneDeep(that.stage.variables.vars)
+                    keysDown: that.inputs.keysDown, //_.cloneDeep(that.stage.keysPressed),
+                    stageVariables: Object.keys(stageVariables)
+                        .map(v => ({
+                            name: v,
+                            value: stageVariables[v].value
+                        }))
                 });
                 base.call(this, block, argCount);
                 // eslint-disable-next-line semi

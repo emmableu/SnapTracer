@@ -4,19 +4,19 @@ class Trigger {
 
         /**
          * The predicate function starts the trigger
-         * @type{()=>Boolean}
+         * @type{() => Boolean}
          */
         this.precondition = pre;
 
         /**
          * The callback function of this trigger
-         * @type{(any)=>} takes a parameter that can be used to store the old state
+         * @type{(any) => } takes a parameter that can be used to store the old state
          */
         this.callback = callback;
 
         /**
          * Function to save the old state for the callback
-         * @type{()=>any}
+         * @type{() => any}
          */
         this.stateSaver = stateSaver;
 
@@ -55,6 +55,10 @@ class Trigger {
         this._active = false;
     }
 
+    /**
+     * discard this trigger if it is one-timed,
+     * reactivate it otherwise
+     */
     recycle () {
         if (this.once) {
             this._alive = false;
@@ -86,7 +90,7 @@ class Callback {
     call () {
         this._callback(this._data);
         this._delay = -1;
-        this.trigger.recycle();
+        this._trigger.recycle();
     }
 
     countdown () {
@@ -99,6 +103,10 @@ class Callback {
 
     get alive () {
         return this._delay >= 0;
+    }
+
+    static get ALWAYS () {
+        return () => true;
     }
 
 }

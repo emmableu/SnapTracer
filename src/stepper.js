@@ -91,10 +91,6 @@ class Stepper {
         );
     }
     
-    static get STOP_SIGNAL () {
-        return 'stop';
-    }
-    
     static get STEP_FINISHED () {
         return 'step_done';
     }
