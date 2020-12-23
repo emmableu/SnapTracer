@@ -25,7 +25,7 @@ const load = async function () {
     snapFrame.contentWindow.focus();
 
     const project = await Promise.resolve($.get({
-        url: `${serverUrl}/scratch_project/${Grab.currentProjectName}`,
+        url: `${serverUrl}/project_file/${Grab.currentProjectName}`,
         dataType: 'text'
     }));
 

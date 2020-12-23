@@ -16,7 +16,7 @@ class Sprites {
         let allSprites = this.getAllSprites();
         for (let s of allSprites) {
             if (s.name === name) {
-                return Sprite(s)
+                return new Sprite(s)
             }
         }
     }
@@ -33,7 +33,7 @@ class Sprites {
 
     isOnEdge (spriteName, arrayOfEdges) {
         let sprite = this.getSpriteByName(spriteName);
-        return arrayOfEdges.all(r => sprite.edges_touched.includes(r));
+        return arrayOfEdges.every(r => sprite.edges_touched.includes(r));
     }
 
 

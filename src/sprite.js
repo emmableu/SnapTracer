@@ -53,7 +53,7 @@ class Sprite {
         return _.cloneDeep(this.sprite.variables.vars);
     }
 
-    edges_touched () {
+    get edges_touched () {
         let padding = 10,
             fb = this.sprite.nestingBounds(),
             stage = this.snapAdapter.stage,

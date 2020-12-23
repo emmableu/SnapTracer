@@ -28048,30 +28048,6 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ "./src/events.js":
-/*!***********************!*\
-  !*** ./src/events.js ***!
-  \***********************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-const Sprites = __webpack_require__(/*! ./sprites */ "./src/sprites.js");
-class Events {
-
-    constructor (snapAdapter) {
-        /**
-         * @type{SnapAdapter}
-         */
-        this.snapAdapter = snapAdapter;
-
-    }
-
-
-}
-module.exports = Inputs;
-
-
-/***/ }),
-
 /***/ "./src/inputs.js":
 /*!***********************!*\
   !*** ./src/inputs.js ***!
@@ -28467,7 +28443,6 @@ const {extend} = __webpack_require__(/*! ./isnap-util.js */ "./src/isnap-util.js
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 const Stepper = __webpack_require__(/*! ./stepper.js */ "./src/stepper.js");
 const Inputs = __webpack_require__(/*! ./inputs.js */ "./src/inputs.js");
-const Events = __webpack_require__(/*! ./events.js */ "./src/events.js");
 const Sprites = __webpack_require__(/*! ./sprites.js */ "./src/sprites.js");
 const Variables = __webpack_require__(/*! ./variables.js */ "./src/variables.js");
 
@@ -28522,8 +28497,6 @@ class SnapAdapter {
          * @type {Inputs}
          */
         this.inputs = new Inputs(this);
-
-        this.events = new Events(this);
 
         this.variables = new Variables(this);
 
@@ -28682,7 +28655,7 @@ class Sprite {
         return _.cloneDeep(this.sprite.variables.vars);
     }
 
-    edges_touched () {
+    get edges_touched () {
         let padding = 10,
             fb = this.sprite.nestingBounds(),
             stage = this.snapAdapter.stage,
@@ -28741,7 +28714,7 @@ class Sprites {
         let allSprites = this.getAllSprites();
         for (let s of allSprites) {
             if (s.name === name) {
-                return Sprite(s)
+                return new Sprite(s)
             }
         }
     }
@@ -28758,8 +28731,11 @@ class Sprites {
 
     isOnEdge (spriteName, arrayOfEdges) {
         let sprite = this.getSpriteByName(spriteName);
-        return arrayOfEdges.all(r => sprite.edges_touched.includes(r));
+        return arrayOfEdges.every(r => sprite.edges_touched.includes(r));
     }
+
+
+
 
 
 }
@@ -29145,9 +29121,9 @@ module.exports = {
 const {$} = __webpack_require__(/*! ./web-libs */ "./src/web-libs.js");
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 const Sprites = __webpack_require__(/*! ./sprites */ "./src/sprites.js");
-const SnapAdapter = __webpack_require__(/*! ./snap-adapter */ "./src/snap-adapter.js");
-const {Trigger} = __webpack_require__(/*! ./trigger */ "./src/trigger.js");
-const Variables = __webpack_require__(/*! ./variables */ "./src/variables.js");
+const SnapAdapter = __webpack_require__(/*! ./snap-adapter.js */ "./src/snap-adapter.js");
+const {Trigger} = __webpack_require__(/*! ./trigger.js */ "./src/trigger.js");
+const Variables = __webpack_require__(/*! ./variables.js */ "./src/variables.js");
 
 window.$ = $;
 
