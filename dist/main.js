@@ -28656,6 +28656,11 @@ class Stepper {
         this.triggers.unshift(trigger);
     }
 
+    clearTriggers () {
+        this.triggers = [];
+        this._callbacks = [];
+    }
+
     async run () {
         if (!this.snapAdapter.projectStarted) {
             await this.snapAdapter.start();
@@ -28791,6 +28796,14 @@ class Trigger {
         } else {
             this.activate();
         }
+    }
+
+    /**
+     * reset to alive and active
+     */
+    reset () {
+        this._alive = true;
+        this._active = true;
     }
 
     get active () {
@@ -28951,7 +28964,7 @@ const fireKey = function (key) {
 };
 
 const load = async function () {
-    Grab.currentProjectName = 'pong_no_left.xml';
+    Grab.currentProjectName = 'pong.xml';
     snapFrame.contentWindow.focus();
     
     const project = await Promise.resolve($.get({

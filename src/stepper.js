@@ -39,6 +39,11 @@ class Stepper {
         this.triggers.unshift(trigger);
     }
 
+    clearTriggers () {
+        this.triggers = [];
+        this._callbacks = [];
+    }
+
     async run () {
         if (!this.snapAdapter.projectStarted) {
             await this.snapAdapter.start();

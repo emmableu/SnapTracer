@@ -67,6 +67,14 @@ class Trigger {
         }
     }
 
+    /**
+     * reset to alive and active
+     */
+    reset () {
+        this._alive = true;
+        this._active = true;
+    }
+
     get active () {
         return this._active;
     }

@@ -19,7 +19,7 @@ const fireKey = function (key) {
 };
 
 const load = async function () {
-    Grab.currentProjectName = 'pong_no_left.xml';
+    Grab.currentProjectName = 'pong.xml';
     snapFrame.contentWindow.focus();
     
     const project = await Promise.resolve($.get({
