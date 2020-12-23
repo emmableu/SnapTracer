@@ -1,0 +1,3 @@
+[submodule "dist/Snap"]
+	path = dist/Snap
+	url = https://github.com/jmoenig/Snap.git

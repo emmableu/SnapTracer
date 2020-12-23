@@ -28048,6 +28048,30 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
+/***/ "./src/events.js":
+/*!***********************!*\
+  !*** ./src/events.js ***!
+  \***********************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Sprites = __webpack_require__(/*! ./sprites */ "./src/sprites.js");
+class Events {
+
+    constructor (snapAdapter) {
+        /**
+         * @type{SnapAdapter}
+         */
+        this.snapAdapter = snapAdapter;
+
+    }
+
+
+}
+module.exports = Inputs;
+
+
+/***/ }),
+
 /***/ "./src/inputs.js":
 /*!***********************!*\
   !*** ./src/inputs.js ***!
@@ -28443,7 +28467,9 @@ const {extend} = __webpack_require__(/*! ./isnap-util.js */ "./src/isnap-util.js
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 const Stepper = __webpack_require__(/*! ./stepper.js */ "./src/stepper.js");
 const Inputs = __webpack_require__(/*! ./inputs.js */ "./src/inputs.js");
+const Events = __webpack_require__(/*! ./events.js */ "./src/events.js");
 const Sprites = __webpack_require__(/*! ./sprites.js */ "./src/sprites.js");
+const Variables = __webpack_require__(/*! ./variables.js */ "./src/variables.js");
 
 class SnapAdapter {
 
@@ -28497,7 +28523,11 @@ class SnapAdapter {
          */
         this.inputs = new Inputs(this);
 
-        
+        this.events = new Events(this);
+
+        this.variables = new Variables(this);
+
+
         this.initGrab();
     }
 
@@ -28541,7 +28571,7 @@ class SnapAdapter {
     resume () {
         this.stage.threads.resumeAll();
     }
-    
+
 
     /**
      * @returns {StageMorphic} the Snap stage
@@ -28591,19 +28621,148 @@ module.exports = SnapAdapter;
 
 /***/ }),
 
+/***/ "./src/sprite.js":
+/*!***********************!*\
+  !*** ./src/sprite.js ***!
+  \***********************/
+/***/ ((module) => {
+
+class Sprite {
+
+    constructor (snapAdapter, sprite) {
+        /**
+         * @type{SpriteMorph}
+         */
+        this.snapAdapter = snapAdapter;
+        this.sprite = sprite;
+    }
+
+    get name (){
+        return this.sprite.name;
+    }
+
+    get posX (){
+        return this.sprite.xPosition();
+    }
+
+    get posY () {
+        return this.sprite.yPosition();
+    }
+
+    get size (){
+        return this.sprite.size;
+    }
+
+    get dir (){
+        return this.sprite.direction();
+    }
+
+    radians(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+
+    get dirX (){
+        return Math.cos(this.radians(this.dir - 90));
+    }
+
+    get dirY (){
+        return Math.sin(this.radians(this.dir - 90));
+    }
+
+    get touching (){
+        return this.snapAdapter.stage.children
+            .filter(c => (c !== sprite))
+            .filter(c => (c instanceof this.snapAdapter.top.SpriteMorph))
+            .filter(c => sprite.isTouching(c))
+            .map(c => c.name);
+    }
+
+    get variables (){
+        return _.cloneDeep(this.sprite.variables.vars);
+    }
+
+    edges_touched () {
+        let padding = 10,
+            fb = this.sprite.nestingBounds(),
+            stage = this.snapAdapter.stage,
+            edge_touched = [];
+
+        if (fb.left() < stage.left() + padding) {
+            edge_touched.push('left');
+        }
+        if (fb.right() > stage.right() - padding) {
+            edge_touched.push('right');
+        }
+        if (fb.top() < stage.top() - padding) {
+            edge_touched.push('up');
+        }
+        if (fb.bottom() > stage.bottom() + padding) {
+            edge_touched.push('bottom');
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+}
+module.exports = Sprite;
+
+
+/***/ }),
+
 /***/ "./src/sprites.js":
 /*!************************!*\
   !*** ./src/sprites.js ***!
   \************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+const Sprite = __webpack_require__(/*! ./sprite */ "./src/sprite.js");
 class Sprites {
-    
-    constructor (snapAdapter) {
-        this.snapAdapter = snapAdapter;
-    }
-}
 
+    constructor (snapAdapter) {
+        /**
+         * @type{SnapAdapter}
+         */
+        this.snapAdapter = snapAdapter;
+
+    }
+
+    getSpriteByName (name) {
+        /**
+         * @type{Sprite(a SpriteMorph)}
+         */
+        let allSprites = this.getAllSprites();
+        for (let s of allSprites) {
+            if (s.name === name) {
+                return Sprite(s)
+            }
+        }
+    }
+
+    getAllSprites () {
+        let world = this.snapAdapter.top.world;
+        return world.children[0].sprites.contents
+    }
+
+    isTouching (spriteNameA, spriteNameB) {
+        let spriteA = this.getSpriteByName(spriteNameA);
+        return spriteA.touching.includes(spriteNameB);
+    }
+
+    isOnEdge (spriteName, arrayOfEdges) {
+        let sprite = this.getSpriteByName(spriteName);
+        return arrayOfEdges.all(r => sprite.edges_touched.includes(r));
+    }
+
+
+}
 module.exports = Sprites;
 
 
@@ -28855,6 +29014,46 @@ module.exports = {Trigger, Callback};
 
 /***/ }),
 
+/***/ "./src/variables.js":
+/*!**************************!*\
+  !*** ./src/variables.js ***!
+  \**************************/
+/***/ ((module) => {
+
+class Variables {
+
+    constructor (snapAdapter) {
+        /**
+         * @type{SnapAdapter}
+         */
+        this.snapAdapter = snapAdapter;
+
+    }
+
+    get stageVariables () {
+        return  this.snapAdapter.ide.globalVariables.vars;
+    }
+
+    getFirstVariableValue(){
+        let allValues = Object.keys(this.stageVariables)
+            .map(v => ({
+                name: v,
+                value: stageVariables[v].value
+            }));
+        return allValues[0]
+    }
+
+
+
+
+
+
+}
+module.exports = Variables;
+
+
+/***/ }),
+
 /***/ "./src/web-libs.js":
 /*!*************************!*\
   !*** ./src/web-libs.js ***!
@@ -28945,8 +29144,10 @@ module.exports = {
   \**********************/
 const {$} = __webpack_require__(/*! ./web-libs */ "./src/web-libs.js");
 const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-const SnapAdapter = __webpack_require__(/*! ./snap-adapter.js */ "./src/snap-adapter.js");
-const {Trigger} = __webpack_require__(/*! ./trigger.js */ "./src/trigger.js");
+const Sprites = __webpack_require__(/*! ./sprites */ "./src/sprites.js");
+const SnapAdapter = __webpack_require__(/*! ./snap-adapter */ "./src/snap-adapter.js");
+const {Trigger} = __webpack_require__(/*! ./trigger */ "./src/trigger.js");
+const Variables = __webpack_require__(/*! ./variables */ "./src/variables.js");
 
 window.$ = $;
 
@@ -28966,12 +29167,12 @@ const fireKey = function (key) {
 const load = async function () {
     Grab.currentProjectName = 'pong.xml';
     snapFrame.contentWindow.focus();
-    
+
     const project = await Promise.resolve($.get({
-        url: `${serverUrl}/scratch_project/${Grab.currentProjectName}`,
+        url: `${serverUrl}/project_file/${Grab.currentProjectName}`,
         dataType: 'text'
     }));
-    
+
     Grab.snapAdapter.loadProject(project);
     /*
     await new Promise(resolve =>
@@ -29000,8 +29201,12 @@ const load = async function () {
     });
     */
 
-    
-    const paddle = Grab.snapAdapter.stage.children[1];
+    const sprites = Grab.snapAdapter.sprites;
+    const paddle = sprites.getSpriteByName('paddle');
+    const ball = sprites.getSpriteByName('ball');
+    const variables = Grab.snapAdapter.variables;
+
+    // const paddle = Grab.snapAdapter.stage.children[1];
     Grab.snapAdapter.stepper.addTrigger(
         new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('left arrow'),
             paddleOldX => {
@@ -29019,7 +29224,7 @@ const load = async function () {
                     console.log('Not moving left!');
                 }
             },
-            () => ({val: paddle.xPosition(), time: Date.now()}),
+            () => ({val: paddle.posX, time: Date.now()}),
             5,
             false)
     );
@@ -29040,11 +29245,102 @@ const load = async function () {
                     console.log('Not moving right!');
                 }
             },
-            () => ({val: paddle.xPosition(), time: Date.now()}),
+            () => ({val: paddle.posX(), time: Date.now()}),
             5,
             false)
     );
-    
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
+            ballOldDir => {
+                if (ball.direction() < ballOldDir.val) {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log('Ball turns on touching paddle');
+                } else {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(ballOldDir.val);
+                    console.log('Ball does not turn on touching paddle!');
+                }
+            },
+            () => ({val: ball.dir, time: Date.now()}),
+            5,
+            false)
+    );
+
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
+            varOldVal => {
+                if (variables.getFirstVariableValue() < varOldVal.val) {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log('variable value changed');
+                } else {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(varOldVal.val);
+                    console.log('variable value did not change!');
+                }
+            },
+            () => ({val: (variables.getFirstVariableValue()), time: Date.now()}),
+            5,
+            false)
+    );
+
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['left', 'up', 'bottom']),
+            ballOldDir => {
+                if (ball.direction() < ballOldDir.val) {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log('Ball turns on edge');
+                } else {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(ballOldDir.val);
+                    console.log('Ball does not turn on touching edge!');
+                }
+            },
+            () => ({val: ball.dir, time: Date.now()}),
+            5,
+            false)
+    );
+
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['right']),
+            varOldVal => {
+                if (variables.getFirstVariableValue() < varOldVal.val) {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log('variable value changed');
+                } else {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(varOldVal.val);
+                    console.log('variable value did not change!');
+                }
+            },
+            () => ({val: (variables.getFirstVariableValue()), time: Date.now()}),
+            5,
+            false)
+    );
+
 };
 
 const run = function () {
