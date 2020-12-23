@@ -1,3 +1,5 @@
 node_modules
 dist/Snap/*
-!dist/Snap/.gitkeep
+!dist/Snap/.
+.DS_Store
+.idea/

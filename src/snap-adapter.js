@@ -2,7 +2,9 @@ const {extend} = require('./isnap-util.js');
 const _ = require('lodash');
 const Stepper = require('./stepper.js');
 const Inputs = require('./inputs.js');
+const Events = require('./events.js');
 const Sprites = require('./sprites.js');
+const Variables = require('./variables.js');
 
 class SnapAdapter {
 
@@ -56,7 +58,11 @@ class SnapAdapter {
          */
         this.inputs = new Inputs(this);
 
-        
+        this.events = new Events(this);
+
+        this.variables = new Variables(this);
+
+
         this.initGrab();
     }
 
@@ -100,7 +106,7 @@ class SnapAdapter {
     resume () {
         this.stage.threads.resumeAll();
     }
-    
+
 
     /**
      * @returns {StageMorphic} the Snap stage

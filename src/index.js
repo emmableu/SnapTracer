@@ -1,7 +1,9 @@
 const {$} = require('./web-libs');
 const _ = require('lodash');
+const Sprites = require('./sprites');
 const SnapAdapter = require('./snap-adapter.js');
 const {Trigger} = require('./trigger.js');
+const Variables = require('./variables.js');
 
 window.$ = $;
 
@@ -21,12 +23,12 @@ const fireKey = function (key) {
 const load = async function () {
     Grab.currentProjectName = 'pong.xml';
     snapFrame.contentWindow.focus();
-    
+
     const project = await Promise.resolve($.get({
         url: `${serverUrl}/scratch_project/${Grab.currentProjectName}`,
         dataType: 'text'
     }));
-    
+
     Grab.snapAdapter.loadProject(project);
     /*
     await new Promise(resolve =>
@@ -55,8 +57,12 @@ const load = async function () {
     });
     */
 
-    
-    const paddle = Grab.snapAdapter.stage.children[1];
+    const sprites = Grab.snapAdapter.sprites;
+    const paddle = sprites.getSpriteByName('paddle');
+    const ball = sprites.getSpriteByName('ball');
+    const variables = Grab.snapAdapter.variables;
+
+    // const paddle = Grab.snapAdapter.stage.children[1];
     Grab.snapAdapter.stepper.addTrigger(
         new Trigger(() => Grab.snapAdapter.inputs.isKeyDown('left arrow'),
             paddleOldX => {
@@ -74,7 +80,7 @@ const load = async function () {
                     console.log('Not moving left!');
                 }
             },
-            () => ({val: paddle.xPosition(), time: Date.now()}),
+            () => ({val: paddle.posX, time: Date.now()}),
             5,
             false)
     );
@@ -95,11 +101,102 @@ const load = async function () {
                     console.log('Not moving right!');
                 }
             },
-            () => ({val: paddle.xPosition(), time: Date.now()}),
+            () => ({val: paddle.posX(), time: Date.now()}),
             5,
             false)
     );
-    
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
+            ballOldDir => {
+                if (ball.direction() < ballOldDir.val) {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log('Ball turns on touching paddle');
+                } else {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(ballOldDir.val);
+                    console.log('Ball does not turn on touching paddle!');
+                }
+            },
+            () => ({val: ball.dir, time: Date.now()}),
+            5,
+            false)
+    );
+
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
+            varOldVal => {
+                if (variables.getFirstVariableValue() < varOldVal.val) {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log('variable value changed');
+                } else {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(varOldVal.val);
+                    console.log('variable value did not change!');
+                }
+            },
+            () => ({val: (variables.getFirstVariableValue()), time: Date.now()}),
+            5,
+            false)
+    );
+
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['left', 'up', 'bottom']),
+            ballOldDir => {
+                if (ball.direction() < ballOldDir.val) {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log('Ball turns on edge');
+                } else {
+                    console.log('------');
+                    console.log(ballOldDir.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(ballOldDir.val);
+                    console.log('Ball does not turn on touching edge!');
+                }
+            },
+            () => ({val: ball.dir, time: Date.now()}),
+            5,
+            false)
+    );
+
+
+    Grab.snapAdapter.stepper.addTrigger(
+        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['right']),
+            varOldVal => {
+                if (variables.getFirstVariableValue() < varOldVal.val) {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log('variable value changed');
+                } else {
+                    console.log('------');
+                    console.log(varOldVal.time);
+                    console.log(Date.now());
+                    console.log(ball.direction());
+                    console.log(varOldVal.val);
+                    console.log('variable value did not change!');
+                }
+            },
+            () => ({val: (variables.getFirstVariableValue()), time: Date.now()}),
+            5,
+            false)
+    );
+
 };
 
 const run = function () {
