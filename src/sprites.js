@@ -13,32 +13,29 @@ class Sprites {
         /**
          * @type{Sprite(a SpriteMorph)}
          */
-        let allSprites = this.getAllSprites();
-        for (let s of allSprites) {
+        const allSprites = this.getAllSprites();
+        for (const s of allSprites) {
             if (s.name === name) {
-                return new Sprite(this.snapAdapter, s)
+                return new Sprite(this.snapAdapter, s);
             }
         }
     }
 
     getAllSprites () {
-        let world = this.snapAdapter.top.world;
-        return world.children[0].sprites.contents
+        return this.snapAdapter.stage.children;
+        //const world = this.snapAdapter.top.world;
+        //return world.children[0].sprites.contents;
     }
 
     isTouching (spriteNameA, spriteNameB) {
-        let spriteA = this.getSpriteByName(spriteNameA);
+        const spriteA = this.getSpriteByName(spriteNameA);
         return spriteA.touching.includes(spriteNameB);
     }
 
     isOnEdge (spriteName, arrayOfEdges) {
-        let sprite = this.getSpriteByName(spriteName);
+        const sprite = this.getSpriteByName(spriteName);
         return arrayOfEdges.every(r => sprite.edges_touched.includes(r));
     }
-
-
-
-
 
 }
 module.exports = Sprites;

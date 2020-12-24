@@ -91,6 +91,7 @@ class Stepper {
         return new Promise(resolve =>
             setTimeout(() => {
                 this.snapAdapter.pause();
+                // all sprite caches itself
                 resolve(this.STEP_FINISHED);
             }, this._stepDuration)
         );

@@ -1,9 +1,10 @@
 const {$} = require('./web-libs');
 const _ = require('lodash');
-const Sprites = require('./sprites');
-const SnapAdapter = require('./snap-adapter.js');
-const {Trigger} = require('./trigger.js');
-const Variables = require('./variables.js');
+// const Sprites = require('./sprites');
+const SnapAdapter = require('./snap-adapter');
+const TestController = require('./test-controller');
+// const {Trigger} = require('./trigger.js');
+// const Variables = require('./variables.js');
 
 window.$ = $;
 
@@ -24,23 +25,29 @@ const load = async function () {
     Grab.currentProjectName = 'pong.xml';
     snapFrame.contentWindow.focus();
 
+    Grab.testController = new TestController(Grab.snapAdapter);
+
     const project = await Promise.resolve($.get({
         url: `${serverUrl}/project_file/${Grab.currentProjectName}`,
         dataType: 'text'
     }));
-
+    
     Grab.snapAdapter.loadProject(project);
-    /*
-    await new Promise(resolve =>
-        setTimeout(() => {
-            resolve(true);
-        }, 100)
-    );
-    */
 
     console.log(Grab.snapAdapter.stage);
+    
 
-    //Grab.snapAdapter.stepper.run();
+    const tests = await Promise.resolve($.get({
+        url: `${serverUrl}/test_script/`,
+        dataType: 'text'
+    }));
+    // eslint-disable-next-line no-eval
+    const testTriggers = eval(tests);
+
+    testTriggers.forEach(
+        tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
+    );
+    console.log(Grab.snapAdapter.stepper.triggers);
     //Grab.snapAdapter.start();
     /*
     await new Promise(resolve =>
@@ -50,13 +57,9 @@ const load = async function () {
             resolve(true);
         }, 3000)
     );
-    await $.post(`${serverUrl}/save_trace/${i}`, {
-        testName: currentProjectName,
-        coverage: 0,
-        trace: JSON.stringify(Grab.snapAdapter.trace)
-    });
     */
 
+    /*
     const sprites = Grab.snapAdapter.sprites;
     const paddle = sprites.getSpriteByName('paddle');
     const ball = sprites.getSpriteByName('ball');
@@ -196,6 +199,7 @@ const load = async function () {
             5,
             false)
     );
+    */
 
 };
 
@@ -233,6 +237,7 @@ const stop = async function () {
         coverage: 0,
         trace: JSON.stringify(Grab.snapAdapter.trace)
     });
+    // Grab.testController.statistics
 };
 
 snapFrame.onload = function () {
