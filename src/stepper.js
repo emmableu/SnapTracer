@@ -1,4 +1,5 @@
 const {_Triggeru, Callback} = require('./trigger');
+const State = require('./state');
 
 class Stepper {
 
@@ -32,7 +33,7 @@ class Stepper {
          * @type {number}
          */
         this._stepDuration = 5;
-        
+
     }
 
     addTrigger (trigger) {
@@ -52,7 +53,7 @@ class Stepper {
         while (this.running) {
             await this.step();
         }
-        
+
     }
 
     stop () {
@@ -91,12 +92,12 @@ class Stepper {
         return new Promise(resolve =>
             setTimeout(() => {
                 this.snapAdapter.pause();
-                // all sprite caches itself
+                this.snapAdapter.stateCache.push(new State(this.snapAdapter));
                 resolve(this.STEP_FINISHED);
             }, this._stepDuration)
         );
     }
-    
+
     static get STEP_FINISHED () {
         return 'step_done';
     }

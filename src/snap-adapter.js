@@ -2,9 +2,8 @@ const {extend} = require('./isnap-util.js');
 const _ = require('lodash');
 const Stepper = require('./stepper.js');
 const Inputs = require('./inputs.js');
-const Sprites = require('./sprites.js');
 const Variables = require('./variables.js');
-const ProgramCache = require('./state');
+const {Cache, State} = require('./state');
 
 class SnapAdapter {
 
@@ -44,11 +43,6 @@ class SnapAdapter {
         this.projectStarted = false;
 
         /**
-         * @type {Sprites}
-         */
-        this.sprites = new Sprites(this);
-
-        /**
          * @type {Stepper}
          */
         this.stepper = new Stepper(this);
@@ -67,6 +61,7 @@ class SnapAdapter {
     initGrab () {
         this.initInstrumenter();
         this.ide.toggleAppMode(true);
+        this.initStateCache();
     }
 
     /**
@@ -146,6 +141,12 @@ class SnapAdapter {
                 base.call(this, block, argCount);
                 // eslint-disable-next-line semi
             })
+    }
+
+
+    initStateCache () {
+        this.stateCache = new Cache();
+        this.stateCache.push(new State(this));
     }
 }
 
