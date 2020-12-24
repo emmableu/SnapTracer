@@ -9,6 +9,10 @@ class Sprites {
 
     }
 
+    update (){
+
+    }
+
     getSpriteByName (name) {
         /**
          * @type{Sprite(a SpriteMorph)}
@@ -26,6 +30,7 @@ class Sprites {
         return world.children[0].sprites.contents;
     }
 
+    //below two belong to SpriteState
     isTouching (spriteA, spriteNameB) {
         return spriteA.touching.includes(spriteNameB);
     }

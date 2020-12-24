@@ -1,22 +1,3 @@
-class Cache {
-    constructor () {
-        this.cache = [];
-    }
-    get cur () {
-        return this.cache[1];
-    }
-    get old () {
-        return this.cache[0];
-    }
-    push (newData) {
-        if (this.cache.length === 2) {
-            this.cache.shift();
-        }
-        this.cache.push(newData);
-    }
-}
-
-
 class Sprite {
 
     constructor (snapAdapter, sprite) {
@@ -25,47 +6,48 @@ class Sprite {
          */
         this.snapAdapter = snapAdapter;
         this.sprite = sprite;
-        this.cache = {
-            posX: new Cache(),
-            posY: new Cache(),
-            size: new Cache(),
-            dir: new Cache(),
-            dirX: new Cache(),
-            dirY: new Cache(),
-            touching: new Cache(),
-            variables: new Cache(),
-            edgesTouched: new Cache()
-        };
+        this.cache = snapAdapter.cache[sprite.name];
+    // this.posX =
+    // get posX can directly get posX, but there can be two instances of states, old and
+    //    new states
+    //    every time we set new to old, and then do update
+    //    this.posX = this.sprite.xPosition() this should be in the update program.
+    //    oldState.sprites.getspritebyname[<name>].pos
+
     }
 
     radians (degrees) {
         return degrees * Math.PI / 180;
     }
 
-    updateCache () {
-
-        this.cache.posX.push(this.sprite.xPosition());
-        this.cache.posY.push(this.sprite.yPosition());
-        this.cache.size.push(this.sprite.size);
-        this.cache.dir.push(this.sprite.direction());
-        this.cache.dirX.push(Math.cos(this.radians(this.sprite.direction() - 90)));
-        this.cache.dirY.push(Math.sin(this.radians(this.sprite.direction() - 90)));
-        this.cache.touching.push(this.calcTouching());
-        this.cache.variables.push(_.cloneDeep(this.sprite.variables.vars));
-        this.cache.edgesTouched.push(this.calcEdgesTouched());
-
-    }
-
     get name (){
         return this.sprite.name;
     }
 
+    update () {
+        this.posX();
+        this.posY();
+        this.size();
+        this.dir();
+
+        // this.cache.posX.push(this.sprite.xPosition());
+        // this.cache.posY.push(this.sprite.yPosition());
+        // this.cache.size.push(this.sprite.size);
+        // this.cache.dir.push(this.sprite.direction());
+        // this.cache.dirX.push(Math.cos(this.radians(this.sprite.direction() - 90)));
+        // this.cache.dirY.push(Math.sin(this.radians(this.sprite.direction() - 90)));
+        // this.cache.touching.push(this.calcTouching());
+        // this.cache.variables.push(_.cloneDeep(this.sprite.variables.vars));
+        // this.cache.edgesTouched.push(this.calcEdgesTouched());
+    }
+
     get posX (){
-        return this.cache.posX.cur;
+        return this.sprite.xPosition();
     }
 
     get posXOld (){
-        return this.cache.posX.old;
+        return this.programstate
+            cache.posX.old;
     }
 
     get posY () {
