@@ -13,7 +13,7 @@ class Sprites {
     update (){
         const allSpriteMorphs = this.getAllSpriteMorphs();
         for (const s of allSpriteMorphs){
-            this.data[s.name] = Sprite(this.snapAdapter).update(s);
+            this.data[s.name] = new Sprite(this.snapAdapter, s);
         }
     }
 
@@ -21,9 +21,9 @@ class Sprites {
         /**
          * @type{a Sprite}
          */
-        for (const [key, value] of this.data) {
+        for (const key of Object.keys(this.data)) {
             if (key === name) {
-                return value;
+                return this.data[key];
             }
         }
     }

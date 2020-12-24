@@ -1,6 +1,6 @@
-// Do not reuse used triggers. 
+// Do not reuse used triggers.
 // Get fresh copies with getTriggerByName or newTrigger
-const _testTriggers = 
+const _testTriggers =
 [
     {
         name: 'testMoveUp',
@@ -25,17 +25,17 @@ const _testTriggers =
             }
         },
         stateSaver: (t) => ({
-            paddleY: t.getSpriteByName('paddle').posY,
-            time: Date.now() 
+            paddleY: t.getSpriteByName('paddle', false).posY,
+            time: Date.now()
         }),
-        delay: 5,
+        delay: 1,
         once: false
     },
     {
         name: 'testMoveDown',
-        precondition: (t) => t.isKeyDown('down arrow'),
+        precondition: (t) => {return t.isKeyDown('down arrow')},
         callback: (t, oldState) => {
-            const paddleY = t.getSpriteByName('paddle').sprite.yPosition();
+            const paddleY = t.getSpriteByName('paddle').posY;
             if (paddleY < oldState.paddleY)
             {
                 console.log('------');
@@ -54,13 +54,13 @@ const _testTriggers =
             }
         },
         stateSaver: (t) => {
-            console.log(`record:${t.getSpriteByName('paddle').sprite.yPosition()}`);
+            console.log(`record:${t.getSpriteByName('paddle', false).posY}`);
             return {
-            paddleY: t.getSpriteByName('paddle').sprite.yPosition(),
-            time: Date.now() 
+            paddleY:  t.getSpriteByName('paddle', false).posY,
+            time: Date.now()
         }},
-        delay: 5,
+        delay: 1,
         once: false
-    }    
+    }
 ];
 _testTriggers
