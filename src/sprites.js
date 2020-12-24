@@ -6,42 +6,32 @@ class Sprites {
          * @type{SnapAdapter}
          */
         this.snapAdapter = snapAdapter;
-
+        this.data = {};
+        this.update();
     }
 
     update (){
-
+        const allSpriteMorphs = this.getAllSpriteMorphs();
+        for (const s of allSpriteMorphs){
+            this.data[s.name] = Sprite(this.snapAdapter).update(s);
+        }
     }
 
     getSpriteByName (name) {
         /**
-         * @type{Sprite(a SpriteMorph)}
+         * @type{a Sprite}
          */
-        const allSprites = this.getAllSprites();
-        for (const s of allSprites) {
-            if (s.name === name) {
-                return new Sprite(this.snapAdapter, s);
+        for (const [key, value] of this.data) {
+            if (key === name) {
+                return value;
             }
         }
     }
 
-    getAllSprites () {
+    getAllSpriteMorphs () {
         const world = this.snapAdapter.top.world;
         return world.children[0].sprites.contents;
     }
-
-    //below two belong to SpriteState
-    isTouching (spriteA, spriteNameB) {
-        return spriteA.touching.includes(spriteNameB);
-    }
-
-    isOnEdge (sprite, arrayOfEdges) {
-        return arrayOfEdges.every(r => sprite.edgesTouched.includes(r));
-    }
-
-
-
-
 
 }
 module.exports = Sprites;
