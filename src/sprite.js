@@ -1,10 +1,13 @@
+const _ = require('lodash');
+
 class Sprite {
 
-    constructor (snapAdapter) {
+    constructor (snapAdapter, spriteMorph) {
         /**
          * @type{SpriteMorph}
          */
         this.snapAdapter = snapAdapter;
+        this.update(spriteMorph);
     }
 
     update (spriteMorph) {
@@ -16,8 +19,8 @@ class Sprite {
         this.dirX = Math.cos(this.radians(spriteMorph.direction() - 90));
         this.dirY = Math.sin(this.radians(spriteMorph.direction() - 90));
         this.touching = this.calcTouching(spriteMorph);
-        this.cache.variables.push(_.cloneDeep(spriteMorph.variables.vars));
-        this.cache.edgesTouched.push(this.calcEdgesTouched());
+        this.variables = _.cloneDeep(spriteMorph.variables.vars);
+        this.edgesTouched = this.calcEdgesTouched(spriteMorph);
     }
 
     radians (degrees) {

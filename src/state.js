@@ -15,12 +15,23 @@ class Cache {
 class State {
     constructor (snapAdapter) {
         this.snapAdapter = snapAdapter;
+        this.spriteCache = new Cache();
         this.update();
     }
     update () {
-        this.sprites = new Sprites(this.snapAdapter);
+        this.spriteCache.push(new Sprites(this.snapAdapter));
+    }
+
+    getSpriteByName (name, isCur = true) {
+        /**
+         * @type{a Sprite}
+         */
+        if (isCur) {
+            return this.spriteCache.cur.getSpriteByName(name);
+        }
+        return this.spriteCache.old.getSpriteByName(name);
+
     }
 }
 
-module.exports = Cache;
-module.exports = State;
+module.exports = {Cache, State};

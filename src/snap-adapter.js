@@ -145,8 +145,7 @@ class SnapAdapter {
 
 
     initStateCache () {
-        this.stateCache = new Cache();
-        this.stateCache.push(new State(this));
+        this.state = new State(this);
     }
 }
 
