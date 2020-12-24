@@ -4,6 +4,7 @@ const Stepper = require('./stepper.js');
 const Inputs = require('./inputs.js');
 const Sprites = require('./sprites.js');
 const Variables = require('./variables.js');
+const ProgramCache = require('./state');
 
 class SnapAdapter {
 

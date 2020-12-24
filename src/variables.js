@@ -1,3 +1,4 @@
+const Cache = require('./state');
 class Variables {
 
     constructor (snapAdapter) {
@@ -9,7 +10,7 @@ class Variables {
     }
 
     get stageVariables () {
-        return  this.snapAdapter.ide.globalVariables.vars;
+        return this.snapAdapter.ide.globalVariables.vars;
     }
 
     getFirstVariableValue(){
