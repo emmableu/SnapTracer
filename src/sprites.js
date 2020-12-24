@@ -13,27 +13,25 @@ class Sprites {
         /**
          * @type{Sprite(a SpriteMorph)}
          */
-        let allSprites = this.getAllSprites();
+        const allSprites = this.getAllSprites();
         for (let s of allSprites) {
             if (s.name === name) {
-                return new Sprite(this.snapAdapter, s)
+                return new Sprite(this.snapAdapter, s);
             }
         }
     }
 
     getAllSprites () {
-        let world = this.snapAdapter.top.world;
-        return world.children[0].sprites.contents
+        const world = this.snapAdapter.top.world;
+        return world.children[0].sprites.contents;
     }
 
-    isTouching (spriteNameA, spriteNameB) {
-        let spriteA = this.getSpriteByName(spriteNameA);
+    isTouching (spriteA, spriteNameB) {
         return spriteA.touching.includes(spriteNameB);
     }
 
-    isOnEdge (spriteName, arrayOfEdges) {
-        let sprite = this.getSpriteByName(spriteName);
-        return arrayOfEdges.every(r => sprite.edges_touched.includes(r));
+    isOnEdge (sprite, arrayOfEdges) {
+        return arrayOfEdges.every(r => sprite.edgesTouched.includes(r));
     }
 
 
