@@ -116,7 +116,7 @@ const load = async function () {
     );
 
     Grab.snapAdapter.stepper.addTrigger(
-        new Trigger(() => Grab.snapAdapter.sprites.isTouching('paddle', 'ball'),
+        new Trigger(() => Grab.snapAdapter.sprites.isTouching(paddle, 'ball'),
             ballOldDir => {
                 if (ball.dir !== ballOldDir.val) {
                     console.log('------');
@@ -162,7 +162,7 @@ const load = async function () {
 
 
     Grab.snapAdapter.stepper.addTrigger(
-        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['left', 'up', 'bottom']),
+        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge(ball, ['left', 'up', 'bottom']),
             ballOldDir => {
                 if (ball.dir !== ballOldDir.val) {
                     console.log('------');
@@ -185,7 +185,7 @@ const load = async function () {
 
 
     Grab.snapAdapter.stepper.addTrigger(
-        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge('ball', ['right']),
+        new Trigger(() => Grab.snapAdapter.sprites.isOnEdge(ball, ['right']),
             varOldVal => {
                 if (variables.getFirstVariableValue() !== varOldVal.val) {
                     console.log('------');

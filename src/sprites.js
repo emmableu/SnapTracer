@@ -22,20 +22,21 @@ class Sprites {
     }
 
     getAllSprites () {
-        return this.snapAdapter.stage.children;
-        //const world = this.snapAdapter.top.world;
-        //return world.children[0].sprites.contents;
+        const world = this.snapAdapter.top.world;
+        return world.children[0].sprites.contents;
     }
 
-    isTouching (spriteNameA, spriteNameB) {
-        const spriteA = this.getSpriteByName(spriteNameA);
+    isTouching (spriteA, spriteNameB) {
         return spriteA.touching.includes(spriteNameB);
     }
 
-    isOnEdge (spriteName, arrayOfEdges) {
-        const sprite = this.getSpriteByName(spriteName);
-        return arrayOfEdges.every(r => sprite.edges_touched.includes(r));
+    isOnEdge (sprite, arrayOfEdges) {
+        return arrayOfEdges.every(r => sprite.edgesTouched.includes(r));
     }
+
+
+
+
 
 }
 module.exports = Sprites;

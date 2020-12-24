@@ -1,3 +1,22 @@
+class Cache {
+    constructor () {
+        this.cache = [];
+    }
+    get cur () {
+        return this.cache[1];
+    }
+    get old () {
+        return this.cache[0];
+    }
+    push (newData) {
+        if (this.cache.length === 2) {
+            this.cache.shift();
+        }
+        this.cache.push(newData);
+    }
+}
+
+
 class Sprite {
 
     constructor (snapAdapter, sprite) {
@@ -6,6 +25,35 @@ class Sprite {
          */
         this.snapAdapter = snapAdapter;
         this.sprite = sprite;
+        this.cache = {
+            posX: new Cache(),
+            posY: new Cache(),
+            size: new Cache(),
+            dir: new Cache(),
+            dirX: new Cache(),
+            dirY: new Cache(),
+            touching: new Cache(),
+            variables: new Cache(),
+            edgesTouched: new Cache()
+        };
+    }
+
+    radians (degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+    updateCache () {
+
+        this.cache.posX.push(this.sprite.xPosition());
+        this.cache.posY.push(this.sprite.yPosition());
+        this.cache.size.push(this.sprite.size);
+        this.cache.dir.push(this.sprite.direction());
+        this.cache.dirX.push(Math.cos(this.radians(this.sprite.direction() - 90)));
+        this.cache.dirY.push(Math.sin(this.radians(this.sprite.direction() - 90)));
+        this.cache.touching.push(this.calcTouching());
+        this.cache.variables.push(_.cloneDeep(this.sprite.variables.vars));
+        this.cache.edgesTouched.push(this.calcEdgesTouched());
+
     }
 
     get name (){
@@ -13,35 +61,61 @@ class Sprite {
     }
 
     get posX (){
-        return this.sprite.xPosition();
+        return this.cache.posX.cur;
+    }
+
+    get posXOld (){
+        return this.cache.posX.old;
     }
 
     get posY () {
-        return this.sprite.yPosition();
+        return this.cache.posY.cur;
+    }
+
+    get posYOld () {
+        return this.cache.posY.old;
     }
 
     get size (){
-        return this.sprite.size;
+        return this.cache.size.cur;
+    }
+
+    get sizeOld (){
+        return this.cache.size.old;
     }
 
     get dir (){
-        return this.sprite.direction();
+        return this.cache.dir.cur;
     }
 
-    radians(degrees) {
-        return degrees * Math.PI / 180;
+    get dirOld (){
+        return this.cache.dir.old;
     }
-
 
     get dirX (){
-        return Math.cos(this.radians(this.dir - 90));
+        return this.cache.dirX.cur;
+    }
+
+    get dirXOld (){
+        return this.cache.dirX.old;
     }
 
     get dirY (){
-        return Math.sin(this.radians(this.dir - 90));
+        return this.cache.dirY.cur;
+    }
+    get dirYOld (){
+        return this.cache.dirY.old;
     }
 
     get touching (){
+        return this.cache.touching.cur;
+    }
+
+    get touchingOld (){
+        return this.cache.touching.old;
+    }
+
+    calcTouching (){
         return this.snapAdapter.stage.children
             .filter(c => (c !== this.sprite))
             .filter(c => (c instanceof this.snapAdapter.top.SpriteMorph))
@@ -50,38 +124,40 @@ class Sprite {
     }
 
     get variables (){
-        return _.cloneDeep(this.sprite.variables.vars);
+        return this.cache.variables.cur;
+    }
+    get variablesOld (){
+        return this.cache.variables.old;
     }
 
-    get edges_touched () {
-        let padding = 10,
-            fb = this.sprite.nestingBounds(),
-            stage = this.snapAdapter.stage,
-            edges_touched = [];
+    get edgesTouched (){
+        return this.cache.edgesTouched.cur;
+    }
+
+    get edgesTouchedOld (){
+        return this.cache.edgesTouched.old;
+    }
+
+    calcEdgesTouched () {
+        const padding = 10;
+        const fb = this.sprite.nestingBounds();
+        const stage = this.snapAdapter.stage;
+        const edgesTouched = [];
 
         if (fb.left() < stage.left() + padding) {
-            edges_touched.push('left');
+            edgesTouched.push('left');
         }
         if (fb.right() > stage.right() - padding) {
-            edges_touched.push('right');
+            edgesTouched.push('right');
         }
         if (fb.top() < stage.top() - padding) {
-            edges_touched.push('up');
+            edgesTouched.push('up');
         }
         if (fb.bottom() > stage.bottom() + padding) {
-            edges_touched.push('bottom');
+            edgesTouched.push('bottom');
         }
-        return edges_touched
-
+        return edgesTouched;
     }
-
-
-
-
-
-
-
-
 
 }
 module.exports = Sprite;
