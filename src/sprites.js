@@ -14,7 +14,7 @@ class Sprites {
          * @type{Sprite(a SpriteMorph)}
          */
         const allSprites = this.getAllSprites();
-        for (let s of allSprites) {
+        for (const s of allSprites) {
             if (s.name === name) {
                 return new Sprite(this.snapAdapter, s);
             }
