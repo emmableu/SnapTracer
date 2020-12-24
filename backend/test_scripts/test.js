@@ -5,7 +5,7 @@ const _testTriggers =
     {
         name: 'testMoveUp',
         precondition: (t) => t.isKeyDown('up arrow'),
-        callback: (t, oldState) => {
+        callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('paddle').posY;
             if (paddleY > oldState.paddleY)
             {
@@ -14,6 +14,7 @@ const _testTriggers =
                 console.log(Date.now());
                 console.log('Paddle moves up');
                 t.reportCase('testMoveUp', true);
+                //t.reportCase(this.name, true);
             } else {
                 console.log('------');
                 console.log(oldState.time);
@@ -29,12 +30,14 @@ const _testTriggers =
             time: Date.now() 
         }),
         delay: 5,
-        once: false
+        once: false,
+        addOnStart: true,
+        reportInStatistics: true
     },
     {
         name: 'testMoveDown',
         precondition: (t) => t.isKeyDown('down arrow'),
-        callback: (t, oldState) => {
+        callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('paddle').sprite.yPosition();
             if (paddleY < oldState.paddleY)
             {
@@ -60,7 +63,39 @@ const _testTriggers =
             time: Date.now() 
         }},
         delay: 5,
-        once: false
+        once: false,
+        addOnStart: true,
+        reportInStatistics: true
+    },
+    {
+        name: 'pressSpaceKey',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            t.inputKey('space', 20);
+            // t.addTrigger(t.getTriggerByName('randomUpDownKey'));
+        },
+        stateSaver: (t) => null,
+        delay: 100,
+        once: true,
+        addOnStart: true,
+        reportInStatistics: false
+    },
+    {
+        name: 'randomUpDownKey',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            const toss = t.random(-1, 1);
+            if (toss < 0) {
+                t.inputKey('up arrow', 200);
+            } else if (toss > 0) {
+                t.inputKey('down arrow', 200);
+            }
+        },
+        stateSaver: (t) => null,
+        delay: 2,
+        once: false,
+        addOnStart: true,
+        reportInStatistics: false
     }    
 ];
 _testTriggers

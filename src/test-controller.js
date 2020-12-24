@@ -1,4 +1,5 @@
 const {Trigger} = require('./trigger');
+const _ = require('lodash');
 class TestController {
 
     constructor (snapAdapter) {
@@ -13,6 +14,8 @@ class TestController {
         this.getSpriteByName = this.snapAdapter.sprites.getSpriteByName.bind(this.snapAdapter.sprites);
         this.isKeyDown = this.snapAdapter.inputs.isKeyDown.bind(this.snapAdapter.inputs);
         this.inputKey = this.snapAdapter.inputs.inputKey.bind(this.snapAdapter.inputs);
+
+        this.random = _.random.bind(_);
         
         this.statistics = [];
         this.triggers = [];
@@ -37,7 +40,7 @@ class TestController {
     }
 
     getTriggerByName (name) {
-        const tr = this.triggers.find(t => t.name === name);
+        const tr = this.triggers.find(tri => tri.name === name);
         return this.bindTrigger(tr);
     }
     // eslint-disable-next-line no-unused-vars

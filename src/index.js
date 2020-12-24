@@ -21,12 +21,29 @@ const fireKey = function (key) {
         _.random(20, 60));
 };
 
+const loadTriggers = async function () {
+    const tests = await Promise.resolve($.get({
+        url: `${serverUrl}/test_script/`,
+        dataType: 'text'
+    }));
+    // eslint-disable-next-line no-eval
+    Grab.testController.triggers = eval(tests);
+    Grab.testNames = Grab.testController.triggers
+        .filter(tr => tr.reportInStatistics).map(tr => tr.name);
+
+    Grab.testController.triggers.filter(tr => tr.addOnStart).forEach(
+        tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
+    );
+    console.log(Grab.snapAdapter.stepper.triggers);
+};
+
 const load = async function () {
     Grab.currentProjectName = 'pong.xml';
     snapFrame.contentWindow.focus();
 
     Grab.testController = new TestController(Grab.snapAdapter);
 
+    console.log('123');
     const project = await Promise.resolve($.get({
         url: `${serverUrl}/project_file/${Grab.currentProjectName}`,
         dataType: 'text'
@@ -36,18 +53,7 @@ const load = async function () {
 
     console.log(Grab.snapAdapter.stage);
     
-
-    const tests = await Promise.resolve($.get({
-        url: `${serverUrl}/test_script/`,
-        dataType: 'text'
-    }));
-    // eslint-disable-next-line no-eval
-    const testTriggers = eval(tests);
-
-    testTriggers.forEach(
-        tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
-    );
-    console.log(Grab.snapAdapter.stepper.triggers);
+    await loadTriggers();
     //Grab.snapAdapter.start();
     /*
     await new Promise(resolve =>
@@ -219,7 +225,22 @@ const run = function () {
     Grab.snapAdapter.stepper.run();
 };
 
-// Not in Use
+const sendTestResult = async function () {
+    const stat = {};
+    for (const test of Grab.testNames) {
+        stat[test] = {success: 0, fail: 0};
+    }
+    for (const item of Grab.testController.statistics) {
+        console.log(item.name);
+        stat[item.name][item.status ? 'success' : 'fail']++;
+    }
+    console.log(stat);
+    await $.post(`${serverUrl}/save_test_result/`, {
+        projectName: Grab.currentProjectName,
+        stat: stat
+    });
+};
+
 const stop = async function () {
     //Grab.ide.stage.step();
     // console.log(Grab.ide.stage.children[2].variables.owner instanceof Grab.top.SpriteMorph);
@@ -233,11 +254,11 @@ const stop = async function () {
 
     const i = 0;
     await $.post(`${serverUrl}/save_trace/${i}`, {
-        testName: Grab.currentProjectName,
+        projectName: Grab.currentProjectName,
         coverage: 0,
         trace: JSON.stringify(Grab.snapAdapter.trace)
     });
-    // Grab.testController.statistics
+    sendTestResult();
 };
 
 snapFrame.onload = function () {

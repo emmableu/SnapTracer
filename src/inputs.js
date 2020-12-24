@@ -10,8 +10,12 @@ class Inputs {
     
     inputKey (key, duration) {
         this.snapAdapter.stage.fireKeyEvent(key);
-        setTimeout(() => this.snapAdapter.stage.removePressedKey(key),
-            duration);
+        return new Promise(resolve =>
+            setTimeout(() => {
+                this.snapAdapter.stage.removePressedKey(key);
+                resolve(true);
+            }, duration)
+        );
     }
 
     isKeyDown (key) {

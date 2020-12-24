@@ -83,6 +83,14 @@ class Trigger {
         return this._alive;
     }
 
+    static get ALWAYS () {
+        return () => true;
+    }
+
+    static get PASSIVE () {
+        return () => false;
+    }
+
 }
 
 class Callback {
@@ -95,8 +103,8 @@ class Callback {
         this._trigger = trigger;
     }
 
-    call () {
-        this._callback(this._data);
+    async call () {
+        await Promise.resolve(this._callback(this._data));
         this._delay = -1;
         this._trigger.recycle();
     }
@@ -111,10 +119,6 @@ class Callback {
 
     get alive () {
         return this._delay >= 0;
-    }
-
-    static get ALWAYS () {
-        return () => true;
     }
 
 }
