@@ -43,7 +43,6 @@ const load = async function () {
 
     Grab.testController = new TestController(Grab.snapAdapter);
 
-    console.log('123');
     const project = await Promise.resolve($.get({
         url: `${serverUrl}/project_file/${Grab.currentProjectName}`,
         dataType: 'text'
