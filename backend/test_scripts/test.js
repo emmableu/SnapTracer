@@ -5,7 +5,6 @@ const _testTriggers =
     {
         name: 'testMoveUp',
         precondition: (t) => {
-            //console.log(t.keysDown); 
             return t.isKeyDown('up arrow')
         },
         callback: function (t, oldState) {
@@ -33,7 +32,7 @@ const _testTriggers =
             paddleY: t.getSpriteByName('paddle', false).posY,
             time: Date.now()
         }},
-        delay: 0,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -66,7 +65,7 @@ const _testTriggers =
             paddleY:  t.getSpriteByName('paddle', false).posY,
             time: Date.now()
         }},
-        delay: 0,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -88,15 +87,15 @@ const _testTriggers =
         name: 'randomUpDownKey',
         precondition: (t) => true,
         callback: (t, oldState) => {
-            //const toss = t.random(-1, 1);
+            const toss = t.random(-1, 1, true);
             //if (toss < 0) {
-            t.inputKey('up arrow', 500);
+                t.inputKey('down arrow', 500);
             //} else if (toss > 0) {
-            //    await t.inputKey('down arrow', 300);
+            //    t.inputKey('down arrow', 500);
             //}
         },
         stateSaver: (t) => null,
-        delay: 0,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: false

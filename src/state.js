@@ -2,19 +2,12 @@ const Sprites = require('./sprites');
 
 class Cache {
     constructor () {
-        this._old = null;
+        this.old = null;
         this.cur = null;
     }
     push (newData) {
-        this._old = this.cur;
+        this.old = this.cur;
         this.cur = newData;
-    }
-
-    get old () {
-        if (this.old === null) {
-            return this.cur;
-        }
-        return this._old;
     }
     
 }

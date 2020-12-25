@@ -32,7 +32,7 @@ class Stepper {
         /**
          * @type {number}
          */
-        this._stepDuration = 100;
+        this._stepDuration = 50;
 
     }
 
@@ -50,6 +50,7 @@ class Stepper {
             await this.snapAdapter.start();
         }
         this.running = true;
+        this.snapAdapter.state.update();
         while (this.running) {
             await this.step();
         }

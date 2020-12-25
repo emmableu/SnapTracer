@@ -11,6 +11,7 @@ class TestController {
 
         this.addTrigger = this.snapAdapter.stepper.addTrigger.bind(this.snapAdapter.stepper);
         this.clearTriggers = this.snapAdapter.stepper.clearTriggers.bind(this.snapAdapter.stepper);
+        this.state = this.snapAdapter.state;
         this.getSpriteByName = this.snapAdapter.state.getSpriteByName
             .bind(this.snapAdapter.state);
         this.isKeyDown = this.snapAdapter.inputs.isKeyDown.bind(this.snapAdapter.inputs);

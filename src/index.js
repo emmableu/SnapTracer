@@ -34,7 +34,7 @@ const loadTriggers = async function () {
     Grab.testController.triggers.filter(tr => tr.addOnStart).forEach(
         tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
     );
-    console.log(Grab.snapAdapter.stepper.triggers);
+    //console.log(Grab.snapAdapter.stepper.triggers);
 };
 
 const load = async function () {
