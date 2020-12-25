@@ -4,7 +4,10 @@ const _testTriggers =
 [
     {
         name: 'testMoveUp',
-        precondition: (t) => t.isKeyDown('up arrow'),
+        precondition: (t) => {
+            //console.log(t.keysDown); 
+            return t.isKeyDown('up arrow')
+        },
         callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('paddle').posY;
             if (paddleY > oldState.paddleY)
@@ -25,11 +28,12 @@ const _testTriggers =
                 t.reportCase('testMoveUp', false);
             }
         },
-        stateSaver: (t) => ({
+        stateSaver: (t) => {
+            return {
             paddleY: t.getSpriteByName('paddle', false).posY,
             time: Date.now()
-        }),
-        delay: 5,
+        }},
+        delay: 0,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -38,7 +42,7 @@ const _testTriggers =
         name: 'testMoveDown',
         precondition: (t) => t.isKeyDown('down arrow'),
         callback: function (t, oldState) {
-            const paddleY = t.getSpriteByName('paddle').posY();
+            const paddleY = t.getSpriteByName('paddle').posY;
             if (paddleY < oldState.paddleY)
             {
                 console.log('------');
@@ -62,7 +66,7 @@ const _testTriggers =
             paddleY:  t.getSpriteByName('paddle', false).posY,
             time: Date.now()
         }},
-        delay: 5,
+        delay: 0,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -75,7 +79,7 @@ const _testTriggers =
             // t.addTrigger(t.getTriggerByName('randomUpDownKey'));
         },
         stateSaver: (t) => null,
-        delay: 100,
+        delay: 2,
         once: true,
         addOnStart: true,
         reportInStatistics: false
@@ -84,18 +88,18 @@ const _testTriggers =
         name: 'randomUpDownKey',
         precondition: (t) => true,
         callback: (t, oldState) => {
-            const toss = t.random(-1, 1);
-            if (toss < 0) {
-                t.inputKey('up arrow', 200);
-            } else if (toss > 0) {
-                t.inputKey('down arrow', 200);
-            }
+            //const toss = t.random(-1, 1);
+            //if (toss < 0) {
+            t.inputKey('up arrow', 500);
+            //} else if (toss > 0) {
+            //    await t.inputKey('down arrow', 300);
+            //}
         },
         stateSaver: (t) => null,
-        delay: 2,
+        delay: 0,
         once: false,
         addOnStart: true,
         reportInStatistics: false
-    }    
+    }
 ];
 _testTriggers

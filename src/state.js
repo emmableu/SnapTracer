@@ -2,13 +2,21 @@ const Sprites = require('./sprites');
 
 class Cache {
     constructor () {
-        this.old = null;
+        this._old = null;
         this.cur = null;
     }
     push (newData) {
-        this.old = this.cur;
+        this._old = this.cur;
         this.cur = newData;
     }
+
+    get old () {
+        if (this.old === null) {
+            return this.cur;
+        }
+        return this._old;
+    }
+    
 }
 
 // eslint-disable-next-line no-unused-vars

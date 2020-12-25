@@ -32,7 +32,7 @@ class Stepper {
         /**
          * @type {number}
          */
-        this._stepDuration = 250;
+        this._stepDuration = 100;
 
     }
 
@@ -92,6 +92,7 @@ class Stepper {
         return new Promise(resolve =>
             setTimeout(() => {
                 this.snapAdapter.pause();
+                /*
                 try {
                     console.log('before update -------');
                     console.log(this.snapAdapter.state.spriteCache.old.data.paddle.posY);
@@ -99,7 +100,9 @@ class Stepper {
                 } catch (e) {
                     console.log('first time');
                 }
+                */
                 this.snapAdapter.state.update();
+                /*
                 try {
                     console.log('after update -------');
                     console.log(this.snapAdapter.state.spriteCache.old.data.paddle.posY);
@@ -107,6 +110,7 @@ class Stepper {
                 } catch (e) {
                     console.log('first time');
                 }
+                */
 
                 resolve(this.STEP_FINISHED);
             }, this._stepDuration)
