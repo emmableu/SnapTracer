@@ -85,7 +85,8 @@ app.post('/save_test_result/', (req, res) => {
     result[testName] = `${n_succ}/${n_tot}`;
   }
   results.push(result);
-  if(true) {//if (results.length >= projectCnt) {
+  console.log(`Recieved ${results.length} out of ${projectCnt} results`);
+  if (results.length >= projectCnt) {
     const Cols = Object.keys(result).map(k => ({id: k, title: k}))
     const csvWriter = csv_writer.createObjectCsvWriter({
       path: testResultFile,
@@ -95,6 +96,7 @@ app.post('/save_test_result/', (req, res) => {
     .then(() => {
         console.log('Test results generated');
     });
+    results = [];
   }
   res.send('ok');
 })

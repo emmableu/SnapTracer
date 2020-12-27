@@ -64,6 +64,12 @@ class SnapAdapter {
         this.initStateCache();
     }
 
+    reset () {
+        this.stepper.reset();
+        this.projectStarted = false;
+        this.initStateCache();
+    }
+
     /**
      * load project from raw XML String
      * @param {string} projectString raw XML string.
