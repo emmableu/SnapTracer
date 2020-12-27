@@ -1,4 +1,3 @@
-const Cache = require('./state');
 class Variables {
 
     constructor (snapAdapter) {
@@ -13,19 +12,14 @@ class Variables {
         return this.snapAdapter.ide.globalVariables.vars;
     }
 
-    getFirstVariableValue(){
-        let allValues = Object.keys(this.stageVariables)
+    getFirstVariableValue (){
+        const allValues = Object.keys(this.stageVariables)
             .map(v => ({
                 name: v,
                 value: this.stageVariables[v].value
             }));
-        return allValues[0]
+        return allValues[0];
     }
-
-
-
-
-
 
 }
 module.exports = Variables;

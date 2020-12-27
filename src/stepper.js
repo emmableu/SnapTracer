@@ -1,5 +1,4 @@
 const {_Triggeru, Callback} = require('./trigger');
-const State = require('./state');
 
 class Stepper {
 
@@ -25,15 +24,15 @@ class Stepper {
         this._callbacks = [];
 
         /**
-         * @type {()=>}
-         */
-        this._stopHandle = false;
-
-        /**
          * @type {number}
          */
         this._stepDuration = 50;
 
+    }
+
+    reset () {
+        this.clearTriggers();
+        this.running = false;
     }
 
     addTrigger (trigger) {
@@ -93,25 +92,7 @@ class Stepper {
         return new Promise(resolve =>
             setTimeout(() => {
                 this.snapAdapter.pause();
-                /*
-                try {
-                    console.log('before update -------');
-                    console.log(this.snapAdapter.state.spriteCache.old.data.paddle.posY);
-                    console.log(this.snapAdapter.state.spriteCache.cur.data.paddle.posY);
-                } catch (e) {
-                    console.log('first time');
-                }
-                */
                 this.snapAdapter.state.update();
-                /*
-                try {
-                    console.log('after update -------');
-                    console.log(this.snapAdapter.state.spriteCache.old.data.paddle.posY);
-                    console.log(this.snapAdapter.state.spriteCache.cur.data.paddle.posY);
-                } catch (e) {
-                    console.log('first time');
-                }
-                */
 
                 resolve(this.STEP_FINISHED);
             }, this._stepDuration)
