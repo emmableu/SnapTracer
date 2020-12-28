@@ -33,7 +33,7 @@ const loadTriggers = async function () {
     //console.log(Grab.snapAdapter.stepper.triggers);
 };
 
-const loadProject = async function (projectName = 'pong.xml') {
+const loadProject = async function (projectName = 'pong_dupcb.xml') {
 
     Grab.currentProjectName = projectName;
     //snapFrame.contentWindow.focus();

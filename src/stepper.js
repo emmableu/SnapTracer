@@ -50,9 +50,9 @@ class Stepper {
         }
         this.running = true;
         this.snapAdapter.state.update();
-        while (this.running) {
-            await this.step();
-        }
+        //while (this.running) {
+        //    await this.step();
+        //}
 
     }
 
@@ -88,7 +88,8 @@ class Stepper {
         // cleanup callbacks and triggers that are no longer alive
         this._callbacks = this._callbacks.filter(c => c.alive);
         this.triggers = this.triggers.filter(t => t.alive);
-        this.snapAdapter.resume();
+        
+        /* this.snapAdapter.resume();
         return new Promise(resolve =>
             setTimeout(() => {
                 this.snapAdapter.pause();
@@ -96,7 +97,7 @@ class Stepper {
 
                 resolve(this.STEP_FINISHED);
             }, this._stepDuration)
-        );
+        );*/
     }
 
     static get STEP_FINISHED () {
