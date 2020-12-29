@@ -8,20 +8,29 @@ window.$ = $;
 
 const Grab = window.Grab = {};
 
+Grab.timePerTest = 10000;
+Grab.coverageRequirement = 0.7;
+
 const snapFrame = document.getElementsByTagName('iframe')[0];
 
 const serverUrl = 'http://localhost:3000';
 
-const loadProjectList = async function () {
+const getProjectList = async function () {
     const projectList = await Promise.resolve($.get(`${serverUrl}/project_list`));
     return projectList;
 };
 
-const loadTriggers = async function () {
+const getTests = async function () {
     const tests = await Promise.resolve($.get({
         url: `${serverUrl}/test_script/`,
         dataType: 'text'
     }));
+    return tests;
+};
+
+const loadTriggers = function (tests) {
+
+    Grab.testController = new TestController(Grab.snapAdapter);
     // eslint-disable-next-line no-eval
     Grab.testController.triggers = eval(tests);
     Grab.testNames = Grab.testController.triggers
@@ -33,23 +42,32 @@ const loadTriggers = async function () {
     //console.log(Grab.snapAdapter.stepper.triggers);
 };
 
-const loadProject = async function (projectName = 'pong_dupcb.xml') {
+const getProject = async function () {
 
-    Grab.currentProjectName = projectName;
-    //snapFrame.contentWindow.focus();
-
-    Grab.testController = new TestController(Grab.snapAdapter);
-
-    const project = await Promise.resolve($.get({
-        url: `${serverUrl}/project_file/${Grab.currentProjectName}`,
+    const projectName = Grab.currentProjectName;
+    const projectXML = await Promise.resolve($.get({
+        url: `${serverUrl}/project_file/${projectName}`,
         dataType: 'text'
     }));
-    
-    Grab.snapAdapter.loadProject(project);
+
+    return projectXML;
+};
+
+
+const loadProject = function (projectString) {
+
+    Grab.snapAdapter.loadProject(projectString);
 
     console.log(Grab.snapAdapter.stage);
-    
-    await loadTriggers();
+};
+const loadOnce = async function (projectName = 'pong_dupcb.xml') {
+
+    Grab.currentProjectName = projectName;
+    const projectXML = await getProject();
+    const tests = await getTests();
+    Grab.snapAdapter.reset();
+    loadProject(projectXML);
+    loadTriggers(tests);
 
 };
 
@@ -63,23 +81,23 @@ const sendTestResult = async function () {
         stat[test] = {success: 0, fail: 0};
     }
     for (const item of Grab.testController.statistics) {
-        console.log(item.name);
+        // console.log(item.name);
         stat[item.name][item.status ? 'success' : 'fail']++;
     }
-    console.log(stat);
+    // console.log(stat);
     await $.post(`${serverUrl}/save_test_result/`, {
         projectName: Grab.currentProjectName,
         stat: stat
-    });
+    }).promise();
 };
 
-const sendTrace = async function () {
+const sendTrace = async function (coverage) {
     const i = 0;
     await $.post(`${serverUrl}/save_trace/${i}`, {
         projectName: Grab.currentProjectName,
-        coverage: 0,
+        coverage: coverage,
         trace: JSON.stringify(Grab.snapAdapter.trace)
-    });
+    }).promise();
 };
 
 const stop = function () {
@@ -88,17 +106,26 @@ const stop = function () {
 
 
 const gradeAll = async function () {
-    Grab.projectList = await loadProjectList();
+    Grab.projectList = await getProjectList();
     for (let i = 0; i < Grab.projectList.length; i++) {
         const currentProjectName = Grab.projectList[i];
-        Grab.snapAdapter.reset();
-        await loadProject(currentProjectName);
+        Grab.currentProjectName = currentProjectName;
         console.log(currentProjectName);
-        run();
-        await new Promise(r => setTimeout(r, 10000));
-        stop();
+        const projectXML = await getProject();
+        const tests = await getTests();
+        let coverage = 0;
+        do {
+            Grab.snapAdapter.reset();
+            loadProject(projectXML);
+            loadTriggers(tests);
+            run();
+            await new Promise(r => setTimeout(r, Grab.timePerTest));
+            stop();
+            coverage = Grab.snapAdapter.instrumenter.getCoverageRatio();
+            console.log(coverage);
+        } while (coverage < Grab.coverageRequirement);
         await sendTestResult();
-        await sendTrace();
+        await sendTrace(coverage);
     }
 
 };
@@ -108,6 +135,6 @@ snapFrame.onload = function () {
 
 };
 $('#grade-all').on('click', gradeAll);
-$('#load').on('click', () => loadProject());
+$('#load').on('click', () => loadOnce());
 $('#run').on('click', run);
 $('#stop').on('click', stop);

@@ -113,7 +113,7 @@ class Instrumenter {
 
     detectProjectBlocks () {
         
-        this.projectBlocks.clear();
+        // this.projectBlocks.clear();
         // use the line below for debugging
         this.projectBlocks = [];
 
@@ -154,7 +154,9 @@ class Instrumenter {
 
     reset () {
         this.trace = [];
-        this.projectBlocks.clear();
+        // this.projectBlocks.clear();
+        // use the line below for debugging
+        this.projectBlocks = [];
         this.coveredBlocks.clear();
     }
 

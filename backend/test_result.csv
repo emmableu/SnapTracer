@@ -1,4 +1,5 @@
 name,testMoveUp,testMoveDown
-pong.xml,0/0,5/11
-pong3.xml,0/0,10/16
-pongfm.xml,0/0,2/23
+pong.xml,13/13,18/18
+pong3.xml,9/9,21/21
+pong_dupcb.xml,18/18,18/18
+pongfm.xml,16/16,16/16
