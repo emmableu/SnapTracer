@@ -33,6 +33,16 @@ class State {
         return this.spriteCache.old.getSpriteByName(name);
 
     }
+
+    spriteIsTouching (nameA, nameB, isCur = true) {
+        const stateToCheck = isCur ? this.spriteCache.cur : this.spriteCache.old;
+        return stateToCheck.getSpriteByName(nameA).isTouching(nameB);
+    }
+    
+    spriteIsOnEdge (name, arrayOfEdges, isCur = true) {
+        const stateToCheck = isCur ? this.spriteCache.cur : this.spriteCache.old;
+        return stateToCheck.getSpriteByName(name).isOnEdge(arrayOfEdges);
+    }
 }
 
 module.exports = {Cache, State};

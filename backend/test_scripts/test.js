@@ -34,7 +34,42 @@ const _testTriggers =
         }},
         delay: 1,
         once: false,
-        addOnStart: true,
+        addOnStart: false,
+        reportInStatistics: true
+    },
+    {
+        name: 'testMoveUpBoundary',
+        precondition: (t) => {
+            return t.isKeyDown('up arrow') && t.getSpriteByName('paddle').posY >= 180
+        },
+        callback: function (t, oldState) {
+            const paddleY = t.getSpriteByName('paddle').posY;
+            if (paddleY > oldState.paddleY)
+            {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Still moves up!');
+                t.reportCase('testMoveUpBoundary', false);
+                //t.reportCase(this.name, true);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log(oldState.paddleY);
+                console.log(paddleY);
+                console.log('At boundary');
+                t.reportCase('testMoveUpBoundary', true);
+            }
+        },
+        stateSaver: (t) => {
+            return {
+            paddleY: t.getSpriteByName('paddle', true).posY,
+            time: Date.now()
+        }},
+        delay: 1,
+        once: false,
+        addOnStart: false,
         reportInStatistics: true
     },
     {
@@ -68,6 +103,99 @@ const _testTriggers =
         }},
         delay: 1,
         once: false,
+        addOnStart: false,
+        reportInStatistics: true
+    },
+    {
+        name: 'testMoveDownBoundary',
+        precondition: (t) => 
+            t.isKeyDown('down arrow') && t.getSpriteByName('paddle').posY <= -180,
+        callback: function (t, oldState) {
+            const paddleY = t.getSpriteByName('paddle').posY;
+            if (paddleY < oldState.paddleY)
+            {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Still moves down!');
+                t.reportCase('testMoveDownBoundary', false);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log(oldState.paddleY);
+                console.log(paddleY);
+                console.log('At boundary');
+                t.reportCase('testMoveDownBoundary', true);
+            }
+        },
+        stateSaver: (t) => {
+            console.log(`record:${t.getSpriteByName('paddle', true).posY}`);
+            return {
+            paddleY:  t.getSpriteByName('paddle', true).posY,
+            time: Date.now()
+        }},
+        delay: 1,
+        once: false,
+        addOnStart: false,
+        reportInStatistics: true
+    },
+    {
+        name: 'ballTouchingPaddleBounce',
+        precondition: (t) => t.spriteIsTouching('paddle', 'ball'),
+        callback: (t, oldState) => {
+            const ballDir = t.getSpriteByName('ball').dir
+            if (ballDir !== oldState.ballDir) {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Ball turns on touching paddle');
+                t.reportCase('ballTouchingPaddleBounce', true);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log(ballDir);
+                console.log(oldState.ballDir);
+                console.log('Ball does not turn on touching paddle!');
+                t.reportCase('ballTouchingPaddleBounce', false);
+            }            
+        },
+        stateSaver: (t) => 
+        ({ballDir: t.getSpriteByName('ball', false).dir, time: Date.now()}),
+        delay: 1,
+        once: false,
+        addOnStart: false,
+        reportInStatistics: true
+    },
+    {
+        name: 'ballTouchingEdgeBounce',
+        precondition: (t) => {
+            // console.log(t.getSpriteByName('ball').edgesTouched);
+            return t.spriteIsOnEdge('ball', ['up'])},
+        callback: (t, oldState) => {
+            const ballDir = t.getSpriteByName('ball').dir
+            if (ballDir !== oldState.ballDir) {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Ball turns on touching edge');
+                t.reportCase('ballTouchingEdgeBounce', true);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log(ballDir);
+                console.log(oldState.ballDir);
+                console.log('Ball does not turn on touching edge!');
+                t.reportCase('ballTouchingEdgeBounce', false);
+            }            
+        },
+        stateSaver: (t) =>  {
+            return {ballDir: t.getSpriteByName('ball').dir, time: Date.now()}
+        },
+        delay: 3,
+        once: false,
         addOnStart: true,
         reportInStatistics: true
     },
@@ -82,7 +210,7 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 100,
         once: false,
-        addOnStart: true,
+        addOnStart: false,
         reportInStatistics: false
     },
     {
@@ -90,9 +218,9 @@ const _testTriggers =
         precondition: (t) => true,
         callback: (t, oldState) => {
             const paddleY = t.getSpriteByName('paddle').posY;
-            if (paddleY < oldState.ballY) {
+            if (paddleY < oldState.ballY - 5) {
                 t.inputKey('up arrow', 1);
-            } else if (paddleY > oldState.ballY) {
+            } else if (paddleY > oldState.ballY + 5) {
                 t.inputKey('down arrow', 1);
             }
         },
@@ -117,7 +245,7 @@ const _testTriggers =
             }
         },
         stateSaver: (t) => null,
-        delay: 5,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: false
