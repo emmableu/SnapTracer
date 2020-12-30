@@ -60,7 +60,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = 'pong.xml') {
+const loadOnce = async function (projectName = 'pong01.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();

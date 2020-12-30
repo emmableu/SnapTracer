@@ -14,8 +14,14 @@ class TestController {
         this.state = this.snapAdapter.state;
         this.getSpriteByName = this.snapAdapter.state.getSpriteByName
             .bind(this.snapAdapter.state);
+        this.spriteIsTouching = this.snapAdapter.state.spriteIsTouching.bind(this.snapAdapter.state);
+        this.spriteIsOnEdge = this.snapAdapter.state.spriteIsOnEdge.bind(this.snapAdapter.state);
         this.isKeyDown = this.snapAdapter.inputs.isKeyDown.bind(this.snapAdapter.inputs);
         this.inputKey = this.snapAdapter.inputs.inputKey.bind(this.snapAdapter.inputs);
+        
+        // temporary
+        this.getFirstVariableValue = this.snapAdapter.variables.getFirstVariableValue
+            .bind(this.snapAdapter.variables);
 
         this.random = _.random.bind(_);
         

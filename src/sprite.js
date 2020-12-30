@@ -61,7 +61,7 @@ class Sprite {
     }
 
     isOnEdge (arrayOfEdges) {
-        return arrayOfEdges.every(r => this.edgesTouched.includes(r));
+        return arrayOfEdges.filter(r => this.edgesTouched.includes(r)).length > 0;
     }
 
 }
