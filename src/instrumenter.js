@@ -34,6 +34,8 @@ class Instrumenter {
         this.trace = [];
         const that = this;
 
+        this.snapAdapter.top.StageMorph.prototype.enablePenLogging = true;
+
         extend(this.snapAdapter.top.Process, 'evaluateBlock',
             function (base, block, argCount) {
                 const sprite = this.context.receiver;

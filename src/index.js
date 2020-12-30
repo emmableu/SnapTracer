@@ -60,7 +60,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = 'pong_dupcb.xml') {
+const loadOnce = async function (projectName = 'pong.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -72,6 +72,7 @@ const loadOnce = async function (projectName = 'pong_dupcb.xml') {
 };
 
 const run = function () {
+    Grab.snapAdapter.top.StageMorph.prototype.enablePenLogging = true;
     Grab.snapAdapter.stepper.run();
 };
 

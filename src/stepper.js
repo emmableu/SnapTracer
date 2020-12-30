@@ -88,6 +88,8 @@ class Stepper {
         // cleanup callbacks and triggers that are no longer alive
         this._callbacks = this._callbacks.filter(c => c.alive);
         this.triggers = this.triggers.filter(t => t.alive);
+
+        this.snapAdapter.inputs.tick();
         
         /* this.snapAdapter.resume();
         return new Promise(resolve =>

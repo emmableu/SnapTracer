@@ -64,6 +64,7 @@ class SnapAdapter {
     reset () {
         this.stepper.reset();
         this.instrumenter.reset();
+        this.inputs.reset();
         this.projectStarted = false;
         this.initStateCache();
     }

@@ -5,7 +5,7 @@ const _testTriggers =
     {
         name: 'testMoveUp',
         precondition: (t) => {
-            return t.isKeyDown('up arrow')
+            return t.isKeyDown('up arrow') && t.getSpriteByName('paddle').posY < 180
         },
         callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('paddle').posY;
@@ -32,14 +32,15 @@ const _testTriggers =
             paddleY: t.getSpriteByName('paddle', false).posY,
             time: Date.now()
         }},
-        delay: 10,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: true
     },
     {
         name: 'testMoveDown',
-        precondition: (t) => t.isKeyDown('down arrow'),
+        precondition: (t) => 
+            t.isKeyDown('down arrow') && t.getSpriteByName('paddle').posY > -180,
         callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('paddle').posY;
             if (paddleY < oldState.paddleY)
@@ -65,7 +66,7 @@ const _testTriggers =
             paddleY:  t.getSpriteByName('paddle', false).posY,
             time: Date.now()
         }},
-        delay: 10,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -74,13 +75,34 @@ const _testTriggers =
         name: 'pressSpaceKey',
         precondition: (t) => true,
         callback: (t, oldState) => {
-            t.inputKey('space', 20);
+            t.inputKey('space', 1);
+            // t.addTrigger(t.getTriggerByName('followBall'));
             // t.addTrigger(t.getTriggerByName('randomUpDownKey'));
         },
         stateSaver: (t) => null,
-        delay: 200,
+        delay: 100,
         once: false,
         addOnStart: true,
+        reportInStatistics: false
+    },
+    {
+        name: 'followBall',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            const paddleY = t.getSpriteByName('paddle').posY;
+            if (paddleY < oldState.ballY) {
+                t.inputKey('up arrow', 1);
+            } else if (paddleY > oldState.ballY) {
+                t.inputKey('down arrow', 1);
+            }
+        },
+        stateSaver: (t) => ({
+            ballY: t.getSpriteByName('ball').posY,
+            time: Date.now()
+        }),
+        delay: 1,
+        once: false,
+        addOnStart: false,
         reportInStatistics: false
     },
     {
@@ -89,13 +111,13 @@ const _testTriggers =
         callback: (t, oldState) => {
             const toss = t.random(-1, 1);
             if (toss < 0) {
-                t.inputKey('up arrow', 100);
+                t.inputKey('up arrow', 1);
             } else if (toss > 0) {
-                t.inputKey('down arrow', 100);
+                t.inputKey('down arrow', 1);
             }
         },
         stateSaver: (t) => null,
-        delay: 10,
+        delay: 5,
         once: false,
         addOnStart: true,
         reportInStatistics: false
