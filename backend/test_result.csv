@@ -1,5 +1,4 @@
-name,testMoveUp,testMoveDown
-pong.xml,13/13,18/18
-pong3.xml,9/9,21/21
-pong_dupcb.xml,18/18,18/18
-pongfm.xml,16/16,16/16
+name,testMoveUp,testMoveUpBoundary,testMoveDown,testMoveDownBoundary,ballTouchingPaddleBounce,ballTouchingPaddleScore,ballTouchingEdgeBounce,ballTouchingRightEdgeScore
+pong.xml,26/26,0/0,38/38,0/0,2/2,4/4,2/2,0/0
+pong01.xml,32/32,0/0,33/33,0/0,0/2,2/2,0/0,0/0
+pong3.xml,33/33,0/0,28/28,0/0,1/1,1/8,1/2,0/0
