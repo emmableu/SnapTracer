@@ -1,6 +1,0 @@
-name,testMoveUp,testMoveUpBoundary,testMoveDown,testMoveDownBoundary,testSpaceBallMove,ballTouchingPaddleBounce,ballTouchingPaddleScore,ballTouchingEdgeBounce,ballTouchingRightEdgeScore,ballTouchingRightEdgeReset
-pongb.xml,47/47,10/10,40/40,0/0,10/10,1/9,9/9,0/0,0/0,9/9
-pongb.xml,104/104,0/0,105/105,30/30,34/34,4/16,16/16,0/0,0/0,33/33
-pong.xml,55/55,26/26,64/64,0/0,7/7,5/5,5/5,6/6,2/2,6/6
-pong_glide.xml,0/0,0/0,1/1,0/0,1/1,0/1,0/1,0/0,0/0,0/0
-pong_glide.xml,0/0,0/0,1/1,0/0,1/1,0/1,0/1,0/0,0/0,0/0

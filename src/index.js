@@ -8,8 +8,8 @@ window.$ = $;
 
 const Grab = window.Grab = {};
 
-Grab.timePerTest = 10000;
-Grab.coverageRequirement = 0.7;
+Grab.timePerTest = 200000;
+Grab.coverageRequirement = 0.5;
 
 const snapFrame = document.getElementsByTagName('iframe')[0];
 
@@ -60,7 +60,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = 'pong_glide.xml') {
+const loadOnce = async function (projectName = '30_10.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -103,7 +103,6 @@ const sendTrace = async function (coverage) {
 
 const stop = function () {
     Grab.snapAdapter.stepper.stop();
-    sendTestResult();
 };
 
 
@@ -139,4 +138,7 @@ snapFrame.onload = function () {
 $('#grade-all').on('click', gradeAll);
 $('#load').on('click', () => loadOnce());
 $('#run').on('click', run);
-$('#stop').on('click', stop);
+$('#stop').on('click', () => {
+    stop();
+    sendTestResult();
+});

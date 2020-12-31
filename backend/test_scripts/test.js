@@ -62,12 +62,16 @@ const _testTriggers =
                 console.log('At boundary');
                 t.reportCase('testMoveUpBoundary', true);
             } else {
-
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Not moving up!');
+                t.reportCase('testMoveUp', false);
             }
         },
         stateSaver: (t) => {
             return {
-            paddleY: t.getSpriteByName('Right Paddle', true).posY,
+            paddleY: t.getSpriteByName('Right Paddle', false).posY,
             time: Date.now()
         }},
         delay: 5,
@@ -102,7 +106,7 @@ const _testTriggers =
         },
         stateSaver: (t) => {
             return {
-                paddleY: t.getSpriteByName('Right Paddle', true).posY,
+                paddleY: t.getSpriteByName('Right Paddle', false).posY,
                 time: Date.now()
             }},
         delay: 5,
@@ -152,15 +156,15 @@ const _testTriggers =
         },
         callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
-            if (paddleY > oldState.paddleY)
+            if (paddleY < oldState.paddleY)
             {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
-                console.log('Still moves up!');
+                console.log('Paddle moves down');
                 t.reportCase('testMoveDown', true);
                 //t.reportCase(this.name, true);
-            } else {
+            } else if (paddleY === oldState.paddleY) {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
@@ -168,11 +172,17 @@ const _testTriggers =
                 console.log(paddleY);
                 console.log('At boundary');
                 t.reportCase('testMoveDownBoundary', true);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Not moving down!');
+                t.reportCase('testMoveDown', false);
             }
         },
         stateSaver: (t) => {
             return {
-            paddleY: t.getSpriteByName('Right Paddle', true).posY,
+            paddleY: t.getSpriteByName('Right Paddle', false).posY,
             time: Date.now()
         }},
         delay: 5,
@@ -206,7 +216,7 @@ const _testTriggers =
         stateSaver: (t) => {
             console.log(`record:${t.getSpriteByName('Right Paddle', true).posY}`);
             return {
-            paddleY:  t.getSpriteByName('Right Paddle', true).posY,
+            paddleY:  t.getSpriteByName('Right Paddle', false).posY,
             time: Date.now()
         }},
         delay: 5,
@@ -466,7 +476,7 @@ const _testTriggers =
             }
         },
         stateSaver: (t) => null,
-        delay: 50,
+        delay: 75,
         once: false,
         addOnStart: true,
         reportInStatistics: false
