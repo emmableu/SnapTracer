@@ -38,9 +38,10 @@ const _testTriggers =
         reportInStatistics: true
     },
     {
-        name: 'testMiddle',
+        name: 'testUpMiddle',
         precondition: (t) => {
-            return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY >= 145 &&  t.getSpriteByName('Right Paddle').posY < 180
+            return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY >= 145 
+            &&  t.getSpriteByName('Right Paddle').posY < 180
         },
         callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
@@ -49,10 +50,10 @@ const _testTriggers =
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
-                console.log('Still moves up!');
+                console.log('Paddle moves up');
                 t.reportCase('testMoveUp', true);
                 //t.reportCase(this.name, true);
-            } else {
+            } else if (paddleY === oldState.paddleY) {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
@@ -60,6 +61,8 @@ const _testTriggers =
                 console.log(paddleY);
                 console.log('At boundary');
                 t.reportCase('testMoveUpBoundary', true);
+            } else {
+
             }
         },
         stateSaver: (t) => {
@@ -67,15 +70,15 @@ const _testTriggers =
             paddleY: t.getSpriteByName('Right Paddle', true).posY,
             time: Date.now()
         }},
-        delay: 1,
+        delay: 5,
         once: false,
         addOnStart: true,
-        reportInStatistics: true
+        reportInStatistics: false
     },
     {
         name: 'testMoveUpBoundary',
         precondition: (t) => {
-            return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY > 180
+            return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY >= 180
         },
         callback: function (t, oldState) {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
@@ -102,7 +105,7 @@ const _testTriggers =
                 paddleY: t.getSpriteByName('Right Paddle', true).posY,
                 time: Date.now()
             }},
-        delay: 1,
+        delay: 5,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -142,6 +145,42 @@ const _testTriggers =
         reportInStatistics: true
     },
     {
+        name: 'testDownMiddle',
+        precondition: (t) => {
+            return t.isKeyDown('down arrow') && t.getSpriteByName('Right Paddle').posY <= -145 
+            &&  t.getSpriteByName('Right Paddle').posY > -180
+        },
+        callback: function (t, oldState) {
+            const paddleY = t.getSpriteByName('Right Paddle').posY;
+            if (paddleY > oldState.paddleY)
+            {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Still moves up!');
+                t.reportCase('testMoveDown', true);
+                //t.reportCase(this.name, true);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log(oldState.paddleY);
+                console.log(paddleY);
+                console.log('At boundary');
+                t.reportCase('testMoveDownBoundary', true);
+            }
+        },
+        stateSaver: (t) => {
+            return {
+            paddleY: t.getSpriteByName('Right Paddle', true).posY,
+            time: Date.now()
+        }},
+        delay: 5,
+        once: false,
+        addOnStart: true,
+        reportInStatistics: false
+    },
+    {
         name: 'testMoveDownBoundary',
         precondition: (t) =>
             t.isKeyDown('down arrow') && t.getSpriteByName('Right Paddle').posY <= -180,
@@ -170,7 +209,40 @@ const _testTriggers =
             paddleY:  t.getSpriteByName('Right Paddle', true).posY,
             time: Date.now()
         }},
-        delay: 1,
+        delay: 5,
+        once: false,
+        addOnStart: true,
+        reportInStatistics: true
+    },
+    {
+        name: 'testSpaceBallMove',
+        precondition: (t) => {
+            return t.isKeyDown('space');
+        },
+        callback: function (t, oldState) {
+            const ballX = t.getSpriteByName('Ball').posX;
+            const ballY = t.getSpriteByName('Ball').posY;
+            if (ballX != oldState.ballX || ballY != oldState.ballY)
+            {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Ball moves');
+                t.reportCase('testSpaceBallMove', true);
+                //t.reportCase(this.name, true);
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Ball does not move!');
+                t.reportCase('testSpaceBallMove', false);
+            }
+        },
+        stateSaver: (t) => ({
+            ballX: t.getSpriteByName('Ball').posX,
+            ballY: t.getSpriteByName('Ball').posY
+        }),
+        delay: 5,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -207,8 +279,8 @@ const _testTriggers =
         name: 'ballTouchingPaddleScore',
         precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
         callback: (t, oldState) => {
-            const score = t.getFirstVariableValue()
-            if (score !== oldState.score) {
+            const score = t.getFirstVariableValue();
+            if (score && (score.value !== oldState.score.value)) {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
@@ -228,7 +300,7 @@ const _testTriggers =
         ({score: t.getFirstVariableValue(), time: Date.now()}),
         delay: 1,
         once: false,
-        addOnStart: false,
+        addOnStart: true,
         reportInStatistics: true
     },
     {
@@ -257,49 +329,88 @@ const _testTriggers =
         stateSaver: (t) =>  {
             return {ballDir: t.getSpriteByName('Ball').dir, time: Date.now()}
         },
-        delay: 3,
+        delay: 5,
+        once: false,
+        addOnStart: true,
+        reportInStatistics: true
+    },
+    // ball touching edge tests
+    {
+        name: 'ballTouchingRightEdgeScore',
+        precondition: (t) => t.spriteIsOnEdge('Ball', ['right'])
+            && t.getFirstVariableValue() && t.getFirstVariableValue().value != 0,
+        callback: (t, oldState) => {
+            const score = t.getFirstVariableValue();
+            if (score && (score.value == 0)) {
+                console.log('------');
+                console.log(Date.now());
+                console.log('Score reset on touching right edge');
+                t.reportCase('ballTouchingRightEdgeScore', true);
+            } else {
+                console.log('------');
+                console.log(Date.now());
+                console.log(score);
+                console.log('Score does not reset on touching right edge!');
+                t.reportCase('ballTouchingRightEdgeScore', false);
+            }
+        },
+        stateSaver: (t) => null,
+        delay: 5,
         once: false,
         addOnStart: true,
         reportInStatistics: true
     },
     {
-        name: 'ballTouchingRightEdgeScore',
+        name: 'ballTouchingRightEdgeReset',
         precondition: (t) => t.spriteIsOnEdge('Ball', ['right']),
         callback: (t, oldState) => {
-            const score = t.getFirstVariableValue();
-            if (oldState.value != 0) {
-                if (score.value == 0) {
-                    console.log('------');
-                  console.log(Date.now());
-                  console.log('Score reset on touching right edge');
-                  t.reportCase('ballTouchingPaddleScore', true);
-                } else {
-                   console.log('------');
-                   console.log(Date.now());
-                   console.log(score);
-                   console.log('Score does not reset on touching right edge!');
-                  t.reportCase('ballTouchingPaddleScore', false);
-                }
+            const ballX = t.getSpriteByName('Ball').posX;
+            const ballY = t.getSpriteByName('Ball').posY;
+            if (ballX < 10 && ballX > -10 && ballY < 10 && ballY > -10) {
+                console.log('------');
+                console.log(Date.now());
+                console.log('Ball reset on touching right edge');
+                t.reportCase('ballTouchingRightEdgeReset', true);
+            } else {
+                console.log('------');
+                console.log(Date.now());
+                console.log('Ball does not reset on touching right edge!');
+                t.reportCase('ballTouchingRightEdgeReset', false);
             }
+            t.addTriggerByName('waitToPressSpace');
         },
-        stateSaver: (t) => t.getFirstVariableValue(),
-        delay: 2,
+        stateSaver: (t) => null,
+        delay: 5,
         once: false,
-        addOnStart: false,
+        addOnStart: true,
         reportInStatistics: true
+    },
+    
+    // controls
+    {
+        name: 'waitToPressSpace',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            t.addTriggerByName('pressSpaceKey');
+        },
+        stateSaver: (t) => null,
+        delay: 10,
+        once: true,
+        addOnStart: true,
+        reportInStatistics: false
     },
     {
         name: 'pressSpaceKey',
         precondition: (t) => true,
         callback: (t, oldState) => {
-            t.inputKey('space', 1);
+            t.inputKey('space', 2);
             // t.addTrigger(t.getTriggerByName('followBall'));
             // t.addTrigger(t.getTriggerByName('randomUpDownKey'));
         },
         stateSaver: (t) => null,
-        delay: 100,
-        once: false,
-        addOnStart: true,
+        delay: 0,
+        once: true,
+        addOnStart: false,
         reportInStatistics: false
     },
     {
@@ -317,7 +428,7 @@ const _testTriggers =
             ballY: t.getSpriteByName('Ball').posY,
             time: Date.now()
         }),
-        delay: 1,
+        delay: 5,
         once: false,
         addOnStart: false,
         reportInStatistics: false
@@ -345,10 +456,12 @@ const _testTriggers =
         callback: (t, oldState) => {
             const toss = t.random(0, 1);
             if (toss === 0) {
-                t.removeTriggerByName('downKey')
+                t.removeTriggerByName('upKey');
+                t.removeTriggerByName('downKey');
                 t.addTriggerByName('upKey');
             } else if (toss === 1) {
-                t.removeTriggerByName('upKey')
+                t.removeTriggerByName('upKey');
+                t.removeTriggerByName('downKey');
                 t.addTriggerByName('downKey');
             }
         },

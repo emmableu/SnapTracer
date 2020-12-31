@@ -60,7 +60,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = 'pong_bad.xml') {
+const loadOnce = async function (projectName = 'pong_glide.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -103,6 +103,7 @@ const sendTrace = async function (coverage) {
 
 const stop = function () {
     Grab.snapAdapter.stepper.stop();
+    sendTestResult();
 };
 
 

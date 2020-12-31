@@ -63,6 +63,7 @@ class Stepper {
     }
 
     step () {
+        // console.log(this.triggers);
 
         // select triggers with precondition satisfied
         const firingTriggers = this.triggers.filter(t => t.active)
