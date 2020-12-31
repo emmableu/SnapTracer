@@ -10,6 +10,7 @@ class TestController {
         this.snapAdapter = snapAdapter;
 
         this.addTrigger = this.snapAdapter.stepper.addTrigger.bind(this.snapAdapter.stepper);
+        this.removeTriggerByName = this.snapAdapter.stepper.removeTriggerByName.bind(this.snapAdapter.stepper);
         this.clearTriggers = this.snapAdapter.stepper.clearTriggers.bind(this.snapAdapter.stepper);
         this.state = this.snapAdapter.state;
         this.getSpriteByName = this.snapAdapter.state.getSpriteByName
@@ -39,6 +40,7 @@ class TestController {
 
     bindTrigger (tr) {
         return new Trigger(
+            tr.name,
             tr.precondition.bind(null, this),
             tr.callback.bind(null, this),
             tr.stateSaver.bind(null, this),
@@ -47,13 +49,18 @@ class TestController {
         );
     }
 
+    addTriggerByName (name) {
+        this.addTrigger(this.getTriggerByName(name));
+    }
+
     getTriggerByName (name) {
         const tr = this.triggers.find(tri => tri.name === name);
         return this.bindTrigger(tr);
     }
     // eslint-disable-next-line no-unused-vars
-    newTrigger (precondition, callback, stateSaver = t => null, delay = 0, once = true) {
+    newTrigger (name, precondition, callback, stateSaver = t => null, delay = 0, once = true) {
         return new Trigger(
+            name,
             precondition.bind(null, this),
             callback.bind(null, this),
             stateSaver.bind(null, this), delay, once

@@ -32,7 +32,7 @@ const _testTriggers =
             paddleY: t.getSpriteByName('Right Paddle', false).posY,
             time: Date.now()
         }},
-        delay: 1,
+        delay: 5,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -67,7 +67,7 @@ const _testTriggers =
             paddleY: t.getSpriteByName('Right Paddle', true).posY,
             time: Date.now()
         }},
-        delay: 5,
+        delay: 1,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -101,7 +101,7 @@ const _testTriggers =
             paddleY:  t.getSpriteByName('Right Paddle', false).posY,
             time: Date.now()
         }},
-        delay: 1,
+        delay: 5,
         once: false,
         addOnStart: true,
         reportInStatistics: true
@@ -193,7 +193,7 @@ const _testTriggers =
         ({score: t.getFirstVariableValue(), time: Date.now()}),
         delay: 1,
         once: false,
-        addOnStart: true,
+        addOnStart: false,
         reportInStatistics: true
     },
     {
@@ -250,7 +250,7 @@ const _testTriggers =
         stateSaver: (t) => t.getFirstVariableValue(),
         delay: 2,
         once: false,
-        addOnStart: true,
+        addOnStart: false,
         reportInStatistics: true
     },
     {
@@ -301,8 +301,51 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 5,
         once: false,
+        addOnStart: false,
+        reportInStatistics: false
+    },
+    {
+        name: 'randomDirection',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            const toss = t.random(0, 1);
+            if (toss === 0) {
+                t.removeTriggerByName('downKey')
+                t.addTriggerByName('upKey');
+            } else if (toss === 1) {
+                t.removeTriggerByName('upKey')
+                t.addTriggerByName('downKey');
+            }
+        },
+        stateSaver: (t) => null,
+        delay: 50,
+        once: false,
         addOnStart: true,
         reportInStatistics: false
+    },
+    {
+        name: 'upKey',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            t.inputKey('up arrow', 1);
+        },
+        stateSaver: (t) => null,
+        delay: 5,
+        once: false,
+        addOnStart: false,
+        reportInStatistics: false
+    },
+    {
+        name: 'downKey',
+        precondition: (t) => true,
+        callback: (t, oldState) => {
+            t.inputKey('down arrow', 1);
+        },
+        stateSaver: (t) => null,
+        delay: 5,
+        once: false,
+        addOnStart: false,
+        reportInStatistics: false       
     }
 ];
 _testTriggers

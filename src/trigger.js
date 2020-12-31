@@ -1,6 +1,13 @@
 class Trigger {
 
-    constructor (pre, callback, stateSaver = () => null, delay = 0, once = true) {
+    constructor (name, pre, callback, stateSaver = () => null,
+        delay = 0, once = true) {
+
+        /**
+         * The name identifier of the trigger
+         * @type{String}
+         */
+        this.name = name;
 
         /**
          * The predicate function starts the trigger
@@ -34,13 +41,21 @@ class Trigger {
         this.once = once;
 
         /**
+         * The pointer to the callback function in the queue
+         * @type{Object}
+         */
+        this._callback = null;
+
+        /**
+         * Whether the precondition is checked at every step
+         * to initiate the callback
          * @type{Boolean}
-         * @private
          */
         this._active = true;
 
         /**
-         * if this trigger is still alive
+         * Whether this trigger is still alive
+         * Non-alive trigger will be discarded
          * @type{Boolean}
          * @private
          */
@@ -65,8 +80,19 @@ class Trigger {
         } else {
             this.activate();
         }
+        this._callback = null;
     }
 
+    /**
+     * Tell its callback to abort if it is in the queue
+     * and mark the trigger to be discarded
+     */
+    withdraw () {
+        if (this._callback) {
+            this._callback.abort();
+        }
+        this._alive = false;
+    }
     /**
      * reset to alive and active
      */
@@ -105,14 +131,23 @@ class Callback {
 
     async call () {
         await Promise.resolve(this._callback(this._data));
-        this._delay = -1;
+        // _delay = -2 means no longer to be fired
+        this._delay = -2;
+        this._trigger.recycle();
+    }
+
+    /**
+     * End the callback cycle without calling
+     */
+    abort () {
+        this._delay = -2;
         this._trigger.recycle();
     }
 
     countdown () {
         // _delay = 0 means to fire in the nearest cycle
         this._delay--;
-        if (this._delay < 0) {
+        if (this._delay === -1) {
             this.call();
         }
     }

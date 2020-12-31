@@ -39,6 +39,10 @@ class Stepper {
         this.triggers.unshift(trigger);
     }
 
+    removeTriggerByName (name) {
+        this.triggers.filter(t => t.name === name).forEach(t => t.withdraw());
+    }
+
     clearTriggers () {
         this.triggers = [];
         this._callbacks = [];
@@ -50,17 +54,11 @@ class Stepper {
         }
         this.running = true;
         this.snapAdapter.state.update();
-        //while (this.running) {
-        //    await this.step();
-        //}
 
     }
 
     stop () {
         console.log('stop stepper');
-        // console.log(this._stopHandle);
-        // this._stopHandle(this.STOP_SIGNAL);
-        // this._stopHandle = null;
         this.running = false;
     }
 
@@ -73,11 +71,12 @@ class Stepper {
         const callbacks = firingTriggers
             .map(t => {
                 t.deactivate();
-                return new Callback(
+                t._callback = new Callback(
                     t.stateSaver(), // save the current state
                     t.delay,
                     t.callback,
                     t);
+                return t._callback;
             });
         // add all activated callbacks to the callback queues
         this._callbacks.unshift(...callbacks);
