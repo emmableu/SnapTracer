@@ -19,6 +19,11 @@ class Stepper {
         this.running = false;
 
         /**
+         * @type{number}
+         */
+        this.stepCount = 0;
+
+        /**
          * @type {Callback[]}
          */
         this._callbacks = [];
@@ -27,12 +32,14 @@ class Stepper {
          * @type {number}
          */
         this._stepDuration = 50;
+        
 
     }
 
     reset () {
         this.clearTriggers();
         this.running = false;
+        this.stepCount = 0;
     }
 
     addTrigger (trigger) {
@@ -63,6 +70,8 @@ class Stepper {
     }
 
     step () {
+
+        this.stepCount++;
         // console.log(this.triggers);
 
         // select triggers with precondition satisfied

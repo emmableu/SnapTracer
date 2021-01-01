@@ -476,7 +476,7 @@ const _testTriggers =
             }
         },
         stateSaver: (t) => null,
-        delay: 75,
+        delay: 100,
         once: false,
         addOnStart: true,
         reportInStatistics: false

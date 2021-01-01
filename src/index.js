@@ -7,9 +7,12 @@ const TestController = require('./test-controller');
 window.$ = $;
 
 const Grab = window.Grab = {};
+Grab.stat = {};
 
-Grab.timePerTest = 200000;
-Grab.coverageRequirement = 0.5;
+Grab.timePerTest = 20000;
+Grab.numTestPerProject = 3;
+Grab.coverageRequirement = 0.7;
+Grab.stepRequirement = 100;
 
 const snapFrame = document.getElementsByTagName('iframe')[0];
 
@@ -60,7 +63,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '30_10.xml') {
+const loadOnce = async function (projectName = 'pong4.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -77,6 +80,7 @@ const run = function () {
 };
 
 const sendTestResult = async function () {
+    /*
     const stat = {};
     for (const test of Grab.testNames) {
         stat[test] = {success: 0, fail: 0};
@@ -85,10 +89,11 @@ const sendTestResult = async function () {
         // console.log(item.name);
         stat[item.name][item.status ? 'success' : 'fail']++;
     }
-    console.log(stat);
+    */
+    console.log(Grab.stat);
     await $.post(`${serverUrl}/save_test_result/`, {
         projectName: Grab.currentProjectName,
-        stat: stat
+        stat: Grab.stat
     }).promise();
 };
 
@@ -115,6 +120,13 @@ const gradeAll = async function () {
         const projectXML = await getProject();
         const tests = await getTests();
         let coverage = 0;
+        let timeoutN = Grab.numTestPerProject;
+              
+        loadTriggers(tests);
+        for (const test of Grab.testNames) {
+            Grab.stat[test] = {success: 0, fail: 0};
+        }
+
         do {
             Grab.snapAdapter.reset();
             loadProject(projectXML);
@@ -122,9 +134,16 @@ const gradeAll = async function () {
             run();
             await new Promise(r => setTimeout(r, Grab.timePerTest));
             stop();
-            coverage = Grab.snapAdapter.instrumenter.getCoverageRatio();
+            const coverageNow = Grab.snapAdapter.instrumenter.getCoverageRatio();
             console.log(coverage);
-        } while (coverage < Grab.coverageRequirement);
+            coverage = Math.max(coverage, coverageNow);
+            timeoutN--;
+            for (const item of Grab.testController.statistics) {
+                // console.log(item.name);
+                Grab.stat[item.name][item.status ? 'success' : 'fail']++;
+            }
+        } while (timeoutN > 0 ||
+            Grab.snapAdapter.stepper.stepCount < Grab.stepRequirement);
         await sendTestResult();
         await sendTrace(coverage);
     }
