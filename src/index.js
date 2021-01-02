@@ -63,7 +63,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = 'pong4.xml') {
+const loadOnce = async function (projectName = '30_23.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -89,6 +89,7 @@ const sendTestResult = async function () {
         // console.log(item.name);
         stat[item.name][item.status ? 'success' : 'fail']++;
     }
+    Grab.stat = stat;
     */
     console.log(Grab.stat);
     await $.post(`${serverUrl}/save_test_result/`, {
