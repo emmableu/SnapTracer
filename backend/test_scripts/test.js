@@ -40,7 +40,7 @@ const _testTriggers =
     {
         name: 'testUpMiddle',
         precondition: (t) => {
-            return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY >= 145 
+            return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY >= 145
             &&  t.getSpriteByName('Right Paddle').posY < 180
         },
         callback: function (t, oldState) {
@@ -151,7 +151,7 @@ const _testTriggers =
     {
         name: 'testDownMiddle',
         precondition: (t) => {
-            return t.isKeyDown('down arrow') && t.getSpriteByName('Right Paddle').posY <= -145 
+            return t.isKeyDown('down arrow') && t.getSpriteByName('Right Paddle').posY <= -145
             &&  t.getSpriteByName('Right Paddle').posY > -180
         },
         callback: function (t, oldState) {
@@ -317,7 +317,7 @@ const _testTriggers =
         name: 'ballTouchingEdgeBounce',
         precondition: (t) => {
             // console.log(t.getSpriteByName('Ball').edgesTouched);
-            return t.spriteIsOnEdge('Ball', ['left'])},
+            return t.spriteIsOnEdge('Ball', ['left', 'top', 'bottom'])},
         callback: (t, oldState) => {
             const ballDir = t.getSpriteByName('Ball').dir
             if (ballDir !== oldState.ballDir) {
@@ -395,7 +395,7 @@ const _testTriggers =
         addOnStart: true,
         reportInStatistics: true
     },
-    
+
     // controls
     {
         name: 'waitToPressSpace',
