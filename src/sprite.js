@@ -47,10 +47,10 @@ class Sprite {
         if (fb.right() > stage.right() - padding) {
             edgesTouched.push('right');
         }
-        if (fb.top() < stage.top() - padding) {
-            edgesTouched.push('up');
+        if (fb.top() < stage.top() + padding) {
+            edgesTouched.push('top');
         }
-        if (fb.bottom() > stage.bottom() + padding) {
+        if (fb.bottom() > stage.bottom() - padding) {
             edgesTouched.push('bottom');
         }
         return edgesTouched;

@@ -87,6 +87,7 @@ app.post('/save_test_result/', (req, res) => {
   }
   results.push(result);
   console.log(`Recieved ${results.length} out of ${projectCnt} results`);
+  console.log(result);
   if (results.length >= projectCnt) {
     const Cols = Object.keys(result).map(k => ({id: k, title: k}))
     const csvWriter = csv_writer.createObjectCsvWriter({

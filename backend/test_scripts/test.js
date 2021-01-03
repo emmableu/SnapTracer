@@ -1,6 +1,19 @@
 // Do not reuse used triggers.
 // Get fresh copies with getTriggerByName or newTrigger
-const _testTriggers =
+const __testNames = [
+    "testMoveUp",
+    "testMoveUpBoundary",
+    "testMoveDown",
+    "testMoveDownBoundary",
+    "testBallNotMoveBeforeSpace",
+    "testSpaceBallMove",
+    "ballTouchingPaddleBounce",
+    "ballTouchingPaddleScore",
+    "ballTouchingEdgeBounce",
+    "ballTouchingRightEdgeScore",
+    //"ballTouchingRightEdgeReset"
+];
+const __Triggers =
 [
     {
         name: 'testMoveUp',
@@ -34,8 +47,7 @@ const _testTriggers =
         }},
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'testUpMiddle',
@@ -76,8 +88,7 @@ const _testTriggers =
         }},
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: false
+        addOnStart: true
     },
     {
         name: 'testMoveUpBoundary',
@@ -111,8 +122,7 @@ const _testTriggers =
             }},
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'testMoveDown',
@@ -145,8 +155,7 @@ const _testTriggers =
         }},
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'testDownMiddle',
@@ -187,8 +196,7 @@ const _testTriggers =
         }},
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: false
+        addOnStart: true
     },
     {
         name: 'testMoveDownBoundary',
@@ -221,8 +229,38 @@ const _testTriggers =
         }},
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
+    },
+    {
+        name: 'testBallNotMoveBeforeSpace',
+        precondition: (t) => true,
+        callback: function (t, oldState) {
+            const ballX = t.getSpriteByName('Ball').posX;
+            const ballY = t.getSpriteByName('Ball').posY;            
+            if (ballX === oldState.ballX || ballY === oldState.ballY)
+            {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Ball does moves before space');
+                //t.reportCase('testSpaceBallMove', true);
+                t.reportCase('testBallNotMoveBeforeSpace', true)
+            } else {
+                console.log('------');
+                console.log(oldState.time);
+                console.log(Date.now());
+                console.log('Ball moves before space!');
+                //t.reportCase('testSpaceBallMove', false);
+                t.reportCase('testBallNotMoveBeforeSpace', false)
+            }
+        },
+        stateSaver: (t) => ({
+            ballX: t.getSpriteByName('Ball').posX,
+            ballY: t.getSpriteByName('Ball').posY
+        }),
+        delay: 5,
+        once: false,
+        addOnStart: true
     },
     {
         name: 'testSpaceBallMove',
@@ -247,6 +285,7 @@ const _testTriggers =
                 console.log('Ball does not move!');
                 t.reportCase('testSpaceBallMove', false);
             }
+            t.removeTriggerByName('testSpaceBallMove');
         },
         stateSaver: (t) => ({
             ballX: t.getSpriteByName('Ball').posX,
@@ -254,8 +293,7 @@ const _testTriggers =
         }),
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'ballTouchingPaddleBounce',
@@ -280,10 +318,9 @@ const _testTriggers =
         },
         stateSaver: (t) =>
         ({ballDir: t.getSpriteByName('Ball', false).dir, time: Date.now()}),
-        delay: 1,
+        delay: 10,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'ballTouchingPaddleScore',
@@ -308,10 +345,9 @@ const _testTriggers =
         },
         stateSaver: (t) =>
         ({score: t.getFirstVariableValue(), time: Date.now()}),
-        delay: 1,
+        delay: 10,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'ballTouchingEdgeBounce',
@@ -337,12 +373,11 @@ const _testTriggers =
             }
         },
         stateSaver: (t) =>  {
-            return {ballDir: t.getSpriteByName('Ball').dir, time: Date.now()}
+            return {ballDir: t.getSpriteByName('Ball', false).dir, time: Date.now()}
         },
-        delay: 5,
+        delay: 10,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     // ball touching edge tests
     {
@@ -365,15 +400,15 @@ const _testTriggers =
             }
         },
         stateSaver: (t) => null,
-        delay: 5,
+        delay: 10,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
     {
         name: 'ballTouchingRightEdgeReset',
         precondition: (t) => t.spriteIsOnEdge('Ball', ['right']),
         callback: (t, oldState) => {
+            /*
             const ballX = t.getSpriteByName('Ball').posX;
             const ballY = t.getSpriteByName('Ball').posY;
             if (ballX < 10 && ballX > -10 && ballY < 10 && ballY > -10) {
@@ -387,13 +422,14 @@ const _testTriggers =
                 console.log('Ball does not reset on touching right edge!');
                 t.reportCase('ballTouchingRightEdgeReset', false);
             }
+            */
+            //t.addTriggerByName('testBallNotMoveBeforeSpace');
             t.addTriggerByName('waitToPressSpace');
         },
         stateSaver: (t) => null,
         delay: 5,
         once: false,
-        addOnStart: true,
-        reportInStatistics: true
+        addOnStart: true
     },
 
     // controls
@@ -401,13 +437,13 @@ const _testTriggers =
         name: 'waitToPressSpace',
         precondition: (t) => true,
         callback: (t, oldState) => {
+            t.removeTriggerByName('testBallNotMoveBeforeSpace');
             t.addTriggerByName('pressSpaceKey');
         },
         stateSaver: (t) => null,
-        delay: 10,
+        delay: 25,
         once: true,
-        addOnStart: true,
-        reportInStatistics: false
+        addOnStart: true
     },
     {
         name: 'pressSpaceKey',
@@ -420,8 +456,7 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 0,
         once: true,
-        addOnStart: false,
-        reportInStatistics: false
+        addOnStart: false
     },
     {
         name: 'followBall',
@@ -440,8 +475,7 @@ const _testTriggers =
         }),
         delay: 5,
         once: false,
-        addOnStart: false,
-        reportInStatistics: false
+        addOnStart: false
     },
     {
         name: 'randomUpDownKey',
@@ -457,8 +491,7 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 5,
         once: false,
-        addOnStart: false,
-        reportInStatistics: false
+        addOnStart: false
     },
     {
         name: 'randomDirection',
@@ -478,8 +511,7 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 100,
         once: false,
-        addOnStart: true,
-        reportInStatistics: false
+        addOnStart: true
     },
     {
         name: 'upKey',
@@ -490,8 +522,7 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 5,
         once: false,
-        addOnStart: false,
-        reportInStatistics: false
+        addOnStart: false
     },
     {
         name: 'downKey',
@@ -502,8 +533,8 @@ const _testTriggers =
         stateSaver: (t) => null,
         delay: 5,
         once: false,
-        addOnStart: false,
-        reportInStatistics: false
+        addOnStart: false
     }
 ];
-_testTriggers
+const __TriggerExports = { testNames: __testNames, triggers: __Triggers };
+__TriggerExports

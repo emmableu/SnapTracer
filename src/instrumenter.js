@@ -45,6 +45,7 @@ class Instrumenter {
                 that.coveredBlocks.add(block);
                 that.trace.push({
                     clockTime: ((Date.now() - that.snapAdapter.startTime) / 1000).toFixed(3),
+                    step: that.snapAdapter.stepper.stepCount,
                     sprite: {
                         name: sprite.name,
                         x: sprite.xPosition(),

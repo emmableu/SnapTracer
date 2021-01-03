@@ -10,9 +10,9 @@ const Grab = window.Grab = {};
 Grab.stat = {};
 
 Grab.timePerTest = 20000;
-Grab.numTestPerProject = 3;
+Grab.numTestPerProject = 4;
 Grab.coverageRequirement = 0.7;
-Grab.stepRequirement = 100;
+Grab.stepRequirement = 1000;
 
 const snapFrame = document.getElementsByTagName('iframe')[0];
 
@@ -35,9 +35,11 @@ const loadTriggers = function (tests) {
 
     Grab.testController = new TestController(Grab.snapAdapter);
     // eslint-disable-next-line no-eval
-    Grab.testController.triggers = eval(tests);
-    Grab.testNames = Grab.testController.triggers
-        .filter(tr => tr.reportInStatistics).map(tr => tr.name);
+    const testScript = eval(tests);
+    Grab.testController.triggers = testScript.triggers;
+    Grab.testNames = testScript.testNames;
+    // Grab.testController.triggers
+    //     .filter(tr => tr.reportInStatistics).map(tr => tr.name);
 
     Grab.testController.triggers.filter(tr => tr.addOnStart).forEach(
         tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
@@ -63,7 +65,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '30_23.xml') {
+const loadOnce = async function (projectName = '999_31.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -79,18 +81,22 @@ const run = function () {
     Grab.snapAdapter.stepper.run();
 };
 
-const sendTestResult = async function () {
-    /*
-    const stat = {};
-    for (const test of Grab.testNames) {
-        stat[test] = {success: 0, fail: 0};
-    }
-    for (const item of Grab.testController.statistics) {
+const sendTestResult = async function (singleRun) {
+    
+    // For single run
+    if (singleRun) {
+        const stat = {};
+        for (const test of Grab.testNames) {
+            stat[test] = {success: 0, fail: 0};
+        }
+        for (const item of Grab.testController.statistics) {
         // console.log(item.name);
-        stat[item.name][item.status ? 'success' : 'fail']++;
+            stat[item.name][item.status ? 'success' : 'fail']++;
+        }
+        Grab.stat = stat;
     }
-    Grab.stat = stat;
-    */
+    
+    
     console.log(Grab.stat);
     await $.post(`${serverUrl}/save_test_result/`, {
         projectName: Grab.currentProjectName,
@@ -160,5 +166,6 @@ $('#load').on('click', () => loadOnce());
 $('#run').on('click', run);
 $('#stop').on('click', () => {
     stop();
-    sendTestResult();
+    sendTestResult(true);
+    //sendTrace(0);
 });
