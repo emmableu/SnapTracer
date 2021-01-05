@@ -5,6 +5,13 @@ class Variables {
          * @type{SnapAdapter}
          */
         this.snapAdapter = snapAdapter;
+        const allValues = Object.keys(this.stageVariables)
+            .map(v => ({
+                name: v,
+                value: this.stageVariables[v].value
+            }));
+        this.firstVariable = allValues[0];
+
 
     }
 
@@ -13,12 +20,7 @@ class Variables {
     }
 
     getFirstVariableValue (){
-        const allValues = Object.keys(this.stageVariables)
-            .map(v => ({
-                name: v,
-                value: this.stageVariables[v].value
-            }));
-        return allValues[0];
+        return this.firstVariable;
     }
 
 }
