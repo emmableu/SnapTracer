@@ -37,6 +37,16 @@ class State {
 
     }
 
+    getFirstVariableValue (isCur = true) {
+        /**
+         * @type{a Sprite}
+         */
+        if (isCur) {
+            return this.variableCache.cur.firstVariable;
+        }
+        return this.spriteCache.old.firstVariable;
+
+    }
     spriteIsTouching (nameA, nameB, isCur = true) {
         const stateToCheck = isCur ? this.spriteCache.cur : this.spriteCache.old;
         return stateToCheck.getSpriteByName(nameA).isTouching(nameB);

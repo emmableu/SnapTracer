@@ -19,9 +19,5 @@ class Variables {
         return this.snapAdapter.ide.globalVariables.vars;
     }
 
-    getFirstVariableValue (){
-        return this.firstVariable;
-    }
-
 }
 module.exports = Variables;

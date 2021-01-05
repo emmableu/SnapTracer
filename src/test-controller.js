@@ -19,13 +19,11 @@ class TestController {
         this.spriteIsOnEdge = this.snapAdapter.state.spriteIsOnEdge.bind(this.snapAdapter.state);
         this.isKeyDown = this.snapAdapter.inputs.isKeyDown.bind(this.snapAdapter.inputs);
         this.inputKey = this.snapAdapter.inputs.inputKey.bind(this.snapAdapter.inputs);
-        
-        // temporary
-        this.getFirstVariableValue = this.snapAdapter.variables.getFirstVariableValue
-            .bind(this.snapAdapter.variables);
+        this.getFirstVariableValue = this.snapAdapter.state.getFirstVariableValue
+            .bind(this.snapAdapter.state);
 
         this.random = _.random.bind(_);
-        
+
         this.statistics = [];
         this.triggers = [];
     }
