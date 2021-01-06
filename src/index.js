@@ -31,7 +31,7 @@ const getTests = async function () {
     return tests;
 };
 
-const loadTriggers = function (tests) {
+const loadTriggers = function (tests, addOnStart = null) {
 
     Grab.testController = new TestController(Grab.snapAdapter);
     // eslint-disable-next-line no-eval
@@ -41,10 +41,16 @@ const loadTriggers = function (tests) {
     // Grab.testController.triggers
     //     .filter(tr => tr.reportInStatistics).map(tr => tr.name);
 
+    if (addOnStart !== null) {
+        Grab.testController.triggers.forEach(tr => {
+            if (tr.name in addOnStart) {
+                tr.addOnStart = addOnStart[tr.name];
+            }
+        });
+    }
     Grab.testController.triggers.filter(tr => tr.addOnStart).forEach(
         tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
     );
-    //console.log(Grab.snapAdapter.stepper.triggers);
 };
 
 const getProject = async function () {
@@ -65,7 +71,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '999_31.xml') {
+const loadOnce = async function (projectName = '30_8.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -137,20 +143,26 @@ const gradeAll = async function () {
         do {
             Grab.snapAdapter.reset();
             loadProject(projectXML);
-            loadTriggers(tests);
+            if (timeoutN === 1) {
+                loadTriggers(tests, {followBall: true, randomDirection: false});
+            } else {
+                loadTriggers(tests);
+            }
             run();
             await new Promise(r => setTimeout(r, Grab.timePerTest));
             stop();
             const coverageNow = Grab.snapAdapter.instrumenter.getCoverageRatio();
             console.log(coverage);
             coverage = Math.max(coverage, coverageNow);
-            timeoutN--;
+
             for (const item of Grab.testController.statistics) {
                 // console.log(item.name);
                 Grab.stat[item.name][item.status ? 'success' : 'fail']++;
             }
-        } while (timeoutN > 0 ||
-            Grab.snapAdapter.stepper.stepCount < Grab.stepRequirement);
+            if (Grab.snapAdapter.stepper.stepCount > Grab.stepRequirement) {
+                timeoutN--;
+            }
+        } while (timeoutN > 0);
         await sendTestResult();
         await sendTrace(coverage);
     }

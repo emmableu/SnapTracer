@@ -23,6 +23,7 @@ class Sprite {
         this.edgesTouched = this.calcEdgesTouched(spriteMorph);
     }
 
+    // FIXME: should be static
     radians (degrees) {
         return degrees * Math.PI / 180;
     }

@@ -1,17 +1,17 @@
 // Do not reuse used triggers.
 // Get fresh copies with getTriggerByName or newTrigger
 const __testNames = [
-    "testMoveUp",
-    "testMoveUpBoundary",
-    "testMoveDown",
-    "testMoveDownBoundary",
-    "testBallNotMoveBeforeSpace",
-    "testSpaceBallMove",
+    "paddleMoveUp",
+    "paddleMoveUpBoundary",
+    "paddleMoveDown",
+    "paddleMoveDownBoundary",
+    "ballNotMoveBeforeSpace",
+    "spaceBallMove",
     "ballTouchingPaddleBounce",
     "ballTouchingPaddleScore",
     "ballTouchingEdgeBounce",
     "ballTouchingRightEdgeScore",
-    //"ballTouchingRightEdgeReset"
+    "ballTouchingRightEdgeReset"
 ];
 const __Triggers =
 [
@@ -28,7 +28,7 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Paddle moves up');
-                t.reportCase('testMoveUp', true);
+                t.reportCase('paddleMoveUp', true);
                 //t.reportCase(this.name, true);
             } else {
                 console.log('------');
@@ -37,7 +37,7 @@ const __Triggers =
                 console.log(oldState.paddleY);
                 console.log(paddleY);
                 console.log('Not moving up!');
-                t.reportCase('testMoveUp', false);
+                t.reportCase('paddleMoveUp', false);
             }
         },
         stateSaver: (t) => {
@@ -63,7 +63,7 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Paddle moves up');
-                t.reportCase('testMoveUp', true);
+                t.reportCase('paddleMoveUp', true);
                 //t.reportCase(this.name, true);
             } else if (paddleY === oldState.paddleY) {
                 console.log('------');
@@ -72,13 +72,13 @@ const __Triggers =
                 console.log(oldState.paddleY);
                 console.log(paddleY);
                 console.log('At boundary');
-                t.reportCase('testMoveUpBoundary', true);
+                t.reportCase('paddleMoveUpBoundary', true);
             } else {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Not moving up!');
-                t.reportCase('testMoveUp', false);
+                t.reportCase('paddleMoveUp', false);
             }
         },
         stateSaver: (t) => {
@@ -103,8 +103,7 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Still moves up!');
-                t.reportCase('testMoveUpBoundary', false);
-                //t.reportCase(this.name, true);
+                t.reportCase('paddleMoveUpBoundary', false);
             } else {
                 console.log('------');
                 console.log(oldState.time);
@@ -112,7 +111,7 @@ const __Triggers =
                 console.log(oldState.paddleY);
                 console.log(paddleY);
                 console.log('At boundary');
-                t.reportCase('testMoveUpBoundary', true);
+                t.reportCase('paddleMoveUpBoundary', true);
             }
         },
         stateSaver: (t) => {
@@ -136,7 +135,7 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Paddle moves down');
-                t.reportCase('testMoveDown', true);
+                t.reportCase('paddleMoveDown', true);
             } else {
                 console.log('------');
                 console.log(oldState.time);
@@ -144,7 +143,7 @@ const __Triggers =
                 console.log(oldState.paddleY);
                 console.log(paddleY);
                 console.log('Not moving down!');
-                t.reportCase('testMoveDown', false);
+                t.reportCase('paddleMoveDown', false);
             }
         },
         stateSaver: (t) => {
@@ -171,7 +170,7 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Paddle moves down');
-                t.reportCase('testMoveDown', true);
+                t.reportCase('paddleMoveDown', true);
                 //t.reportCase(this.name, true);
             } else if (paddleY === oldState.paddleY) {
                 console.log('------');
@@ -180,13 +179,13 @@ const __Triggers =
                 console.log(oldState.paddleY);
                 console.log(paddleY);
                 console.log('At boundary');
-                t.reportCase('testMoveDownBoundary', true);
+                t.reportCase('paddleMoveDownBoundary', true);
             } else {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Not moving down!');
-                t.reportCase('testMoveDown', false);
+                t.reportCase('paddleMoveDown', false);
             }
         },
         stateSaver: (t) => {
@@ -210,7 +209,7 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Still moves down!');
-                t.reportCase('testMoveDownBoundary', false);
+                t.reportCase('paddleMoveDownBoundary', false);
             } else {
                 console.log('------');
                 console.log(oldState.time);
@@ -218,7 +217,7 @@ const __Triggers =
                 console.log(oldState.paddleY);
                 console.log(paddleY);
                 console.log('At boundary');
-                t.reportCase('testMoveDownBoundary', true);
+                t.reportCase('paddleMoveDownBoundary', true);
             }
         },
         stateSaver: (t) => {
@@ -243,15 +242,13 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Ball does moves before space');
-                //t.reportCase('testSpaceBallMove', true);
-                t.reportCase('testBallNotMoveBeforeSpace', true)
+                t.reportCase('ballNotMoveBeforeSpace', true)
             } else {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Ball moves before space!');
-                //t.reportCase('testSpaceBallMove', false);
-                t.reportCase('testBallNotMoveBeforeSpace', false)
+                t.reportCase('ballNotMoveBeforeSpace', false)
             }
         },
         stateSaver: (t) => ({
@@ -276,14 +273,14 @@ const __Triggers =
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Ball moves');
-                t.reportCase('testSpaceBallMove', true);
+                t.reportCase('spaceBallMove', true);
                 //t.reportCase(this.name, true);
             } else {
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
                 console.log('Ball does not move!');
-                t.reportCase('testSpaceBallMove', false);
+                t.reportCase('spaceBallMove', false);
             }
             t.removeTriggerByName('testSpaceBallMove');
         },
@@ -299,8 +296,21 @@ const __Triggers =
         name: 'ballTouchingPaddleBounce',
         precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
         callback: (t, oldState) => {
-            const ballDir = t.getSpriteByName('Ball').dir
-            if (ballDir !== oldState.ballDir) {
+            const ballDir = t.getSpriteByName('Ball').dir;
+            const ballX = t.getSpriteByName('Ball', false).posX;
+            //const ballY = t.getSpriteByName('Ball').posY;
+            //const tanA = Math.tan(oldState.ballDir / 180 * Math.PI);
+            //const tanB = Math.tan(ballDir / 180 * Math.PI);
+            //const x = (tanA * oldState.ballX - tanB * ballX  + ballY - oldState.ballY)/(tanA - tanB);
+            const paddleX = t.getSpriteByName('Right Paddle').posX;
+            if (ballDir !== oldState.ballDir && 
+               (ballX - paddleX) * (oldState.ballX - paddleX) > 0
+               //x < 190
+            ) {
+                console.log('====')
+                console.log(ballX);
+                console.log(paddleX);
+                //console.log(x);
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
@@ -317,7 +327,10 @@ const __Triggers =
             }
         },
         stateSaver: (t) =>
-        ({ballDir: t.getSpriteByName('Ball', false).dir, time: Date.now()}),
+        ({ballDir: t.getSpriteByName('Ball', false).dir, 
+          ballX: t.getSpriteByName('Ball', false).posX,
+          ballY: t.getSpriteByName('Ball', false).posY,
+          time: Date.now()}),
         delay: 10,
         once: false,
         addOnStart: true
@@ -344,7 +357,7 @@ const __Triggers =
             }
         },
         stateSaver: (t) =>
-        ({score: t.getFirstVariableValue(), time: Date.now()}),
+        ({score: t.getFirstVariableValue(false), time: Date.now()}),
         delay: 10,
         once: false,
         addOnStart: true
@@ -382,8 +395,8 @@ const __Triggers =
     // ball touching edge tests
     {
         name: 'ballTouchingRightEdgeScore',
-        precondition: (t) => t.spriteIsOnEdge('Ball', ['right'])
-            && t.getFirstVariableValue() && t.getFirstVariableValue().value != 0,
+        precondition: (t) => t.spriteIsOnEdge('Ball', ['right']) &&
+            t.getFirstVariableValue() && t.getFirstVariableValue().value != 0,
         callback: (t, oldState) => {
             const score = t.getFirstVariableValue();
             if (score && (score.value == 0)) {
@@ -408,7 +421,6 @@ const __Triggers =
         name: 'ballTouchingRightEdgeReset',
         precondition: (t) => t.spriteIsOnEdge('Ball', ['right']),
         callback: (t, oldState) => {
-            /*
             const ballX = t.getSpriteByName('Ball').posX;
             const ballY = t.getSpriteByName('Ball').posY;
             if (ballX < 10 && ballX > -10 && ballY < 10 && ballY > -10) {
@@ -422,7 +434,6 @@ const __Triggers =
                 console.log('Ball does not reset on touching right edge!');
                 t.reportCase('ballTouchingRightEdgeReset', false);
             }
-            */
             //t.addTriggerByName('testBallNotMoveBeforeSpace');
             t.addTriggerByName('waitToPressSpace');
         },
@@ -431,7 +442,6 @@ const __Triggers =
         once: false,
         addOnStart: true
     },
-
     // controls
     {
         name: 'waitToPressSpace',

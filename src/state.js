@@ -39,12 +39,12 @@ class State {
 
     getFirstVariableValue (isCur = true) {
         /**
-         * @type{a Sprite}
+         * @type{Any}
          */
         if (isCur) {
             return this.variableCache.cur.firstVariable;
         }
-        return this.spriteCache.old.firstVariable;
+        return this.variableCache.old.firstVariable;
 
     }
     spriteIsTouching (nameA, nameB, isCur = true) {
