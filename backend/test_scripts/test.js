@@ -536,8 +536,7 @@ const __Triggers =
     },
     {
         name: 'followBall',
-        precondition: (t) => t.getFirstVariableValue() == null || 
-            (t.getFirstVariableValue() && t.getFirstVariableValue().value <= 0),
+        precondition: (t) => true,
         callback: (t, oldState) => {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
             if (paddleY < oldState.ballY - 5) {
@@ -557,6 +556,33 @@ const __Triggers =
         addOnStart: false
     },
     {
+        name: 'ballTouchPaddleStopFollow',
+        precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
+        callback: (t, oldState) => {
+            t.removeTriggerByName('followBall');
+            t.addTriggerByName('evadeBall');
+        },
+        stateSaver: (t) => null,
+        delay: 0,
+        once: false,
+        addOnStart: false,
+        debounce: true
+    },
+    {
+        name: 'ballTouchRightEdgeStartFollow',
+        precondition: (t) => t.spriteIsOnEdge('Ball', ['right']),
+        callback: (t, oldState) => {
+            t.removeTriggerByName('evadeBall');
+            t.addTriggerByName('followBall');
+            t.addTriggerByName('pressSpaceKey');
+        },
+        stateSaver: (t) => null,
+        delay: 0,
+        once: false,
+        addOnStart: false,
+        debounce: true
+    },
+    {
         name: 'randomUpDownKey',
         precondition: (t) => true,
         callback: (t, oldState) => {
@@ -573,11 +599,11 @@ const __Triggers =
         addOnStart: false
     },
     {
-        name: 'evadeWhenScored',
-        precondition: (t) => t.getFirstVariableValue() && t.getFirstVariableValue().value > 0,
+        name: 'evadeBall',
+        precondition: (t) => true,
         callback: (t, oldState) => {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
-            if (paddleY < 145) {
+            if (paddleY < 170) {
                 t.inputKey('up arrow', 2);
             }
         },

@@ -15,7 +15,7 @@ const scriptInputFolder = 'test_scripts'
 const outputFolder = 'dumped_traces'
 const testResultBaseName = 'test_result'
 
-var resultFileLength = 2;
+var resultFileLength = 100;
 var results = [];
 var resultCnt = 0;
 var projectCnt = 0;

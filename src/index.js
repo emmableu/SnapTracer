@@ -11,7 +11,7 @@ Grab.stat = {};
 
 Grab.testSet = [
     {
-        duration: 10000,
+        duration: 7500,
         triggerSwitches: {
             randomDirection: false,
             upKey: true
@@ -19,7 +19,7 @@ Grab.testSet = [
         stepRequirement: 100
     },
     {
-        duration: 10000,
+        duration: 7500,
         triggerSwitches: {
             randomDirection: false,
             downKey: true
@@ -27,11 +27,13 @@ Grab.testSet = [
         stepRequirement: 100
     },
     {
-        duration: 30000,
+        duration: 35000,
         triggerSwitches: {
             followBall: true,
-            evadeWhenScored: true,
-            randomDirection: false
+            randomDirection: false,
+            ballTouchPaddleStopFollow: true,
+            ballTouchRightEdgeStartFollow: true,
+            testSpaceBallMove: false
         },
         stepRequirement: 1000
     },
