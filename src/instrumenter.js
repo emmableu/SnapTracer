@@ -43,7 +43,6 @@ class Instrumenter {
                 //that.coveredBlocks.add(that._boundsAsId(block.bounds));
                 // use the line below for debugging
                 that.coveredBlocks.add(block);
-                if (sprite.name === "Ball") {
                 that.trace.push({
                     clockTime: ((Date.now() - that.snapAdapter.startTime) / 1000).toFixed(3),
                     step: that.snapAdapter.stepper.stepCount,
@@ -68,7 +67,6 @@ class Instrumenter {
                             value: stageVariables[v].value
                         }))
                 });
-                }
                 base.call(this, block, argCount);
                 // eslint-disable-next-line semi
             })

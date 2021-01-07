@@ -536,7 +536,8 @@ const __Triggers =
     },
     {
         name: 'followBall',
-        precondition: (t) => true,
+        precondition: (t) => t.getFirstVariableValue() == null || 
+            (t.getFirstVariableValue() && t.getFirstVariableValue().value <= 0),
         callback: (t, oldState) => {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
             if (paddleY < oldState.ballY - 5) {
@@ -545,13 +546,15 @@ const __Triggers =
                 t.inputKey('down arrow', 2);
             }
         },
-        stateSaver: (t) => ({
-            ballY: t.getSpriteByName('Ball').posY,
-            time: Date.now()
-        }),
+        stateSaver: (t) => {
+            return {
+                ballY: t.getSpriteByName('Ball').posY,
+                time: Date.now()
+            }
+        },
         delay: 5,
         once: false,
-        addOnStart: true
+        addOnStart: false
     },
     {
         name: 'randomUpDownKey',
@@ -565,6 +568,23 @@ const __Triggers =
             }
         },
         stateSaver: (t) => null,
+        delay: 5,
+        once: false,
+        addOnStart: false
+    },
+    {
+        name: 'evadeWhenScored',
+        precondition: (t) => t.getFirstVariableValue() && t.getFirstVariableValue().value > 0,
+        callback: (t, oldState) => {
+            const paddleY = t.getSpriteByName('Right Paddle').posY;
+            if (paddleY < 145) {
+                t.inputKey('up arrow', 2);
+            }
+        },
+        stateSaver: (t) => ({
+            ballY: t.getSpriteByName('Ball').posY,
+            time: Date.now()
+        }),
         delay: 5,
         once: false,
         addOnStart: false
@@ -587,7 +607,7 @@ const __Triggers =
         stateSaver: (t) => null,
         delay: 100,
         once: false,
-        addOnStart: false
+        addOnStart: true
     },
     {
         name: 'upKey',

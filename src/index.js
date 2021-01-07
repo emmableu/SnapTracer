@@ -9,7 +9,7 @@ window.$ = $;
 const Grab = window.Grab = {};
 Grab.stat = {};
 
-Grab.timePerTest = 20000;
+Grab.timePerTest = [30000, 20000, 20000, 20000];
 Grab.numTestPerProject = 4;
 Grab.coverageRequirement = 0.7;
 Grab.stepRequirement = 1000;
@@ -45,6 +45,8 @@ const loadTriggers = function (tests, addOnStart = null) {
         Grab.testController.triggers.forEach(tr => {
             if (tr.name in addOnStart) {
                 tr.addOnStart = addOnStart[tr.name];
+                console.log(tr.name);
+                console.log(addOnStart[tr.name]);
             }
         });
     }
@@ -144,12 +146,17 @@ const gradeAll = async function () {
             Grab.snapAdapter.reset();
             loadProject(projectXML);
             if (timeoutN === 1) {
-                loadTriggers(tests, {followBall: true, randomDirection: false});
+                loadTriggers(tests, {
+                    followBall: true,
+                    evadeWhenScored: true,
+                    randomDirection: false
+                });
             } else {
                 loadTriggers(tests);
             }
+            const durationNow = Grab.timePerTest[timeoutN - 1];
             run();
-            await new Promise(r => setTimeout(r, Grab.timePerTest));
+            await new Promise(r => setTimeout(r, durationNow));
             stop();
             const coverageNow = Grab.snapAdapter.instrumenter.getCoverageRatio();
             console.log(coverage);
