@@ -241,7 +241,7 @@ const __Triggers =
                 console.log('------');
                 console.log(oldState.time);
                 console.log(Date.now());
-                console.log('Ball does moves before space');
+                console.log('Ball does not moves before space');
                 t.reportCase('ballNotMoveBeforeSpace', true)
             } else {
                 console.log('------');
@@ -292,49 +292,106 @@ const __Triggers =
         once: false,
         addOnStart: true
     },
+    /*
     {
         name: 'ballTouchingPaddleBounce',
         precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
         callback: (t, oldState) => {
             const ballDir = t.getSpriteByName('Ball').dir;
-            const ballX = t.getSpriteByName('Ball', false).posX;
+            const ballX = t.getSpriteByName('Ball').posX;
             //const ballY = t.getSpriteByName('Ball').posY;
             //const tanA = Math.tan(oldState.ballDir / 180 * Math.PI);
             //const tanB = Math.tan(ballDir / 180 * Math.PI);
             //const x = (tanA * oldState.ballX - tanB * ballX  + ballY - oldState.ballY)/(tanA - tanB);
             const paddleX = t.getSpriteByName('Right Paddle').posX;
+            console.log(`side:${(ballX - paddleX) * (oldState.ballX - paddleX) > 0}`);
             if (ballDir !== oldState.ballDir && 
                (ballX - paddleX) * (oldState.ballX - paddleX) > 0
                //x < 190
             ) {
-                console.log('====')
-                console.log(ballX);
-                console.log(paddleX);
+                console.log('====');
+                //console.log(ballX);
+                //console.log(paddleX);
                 //console.log(x);
+                console.log(t.snapAdapter.stepper.stepCount);
                 console.log('------');
-                console.log(oldState.time);
-                console.log(Date.now());
+                console.log(ballDir);
+                //console.log(oldState.time);
+                //console.log(Date.now());
                 console.log('Ball turns on touching paddle');
                 t.reportCase('ballTouchingPaddleBounce', true);
             } else {
+                console.log('====')
+                console.log(t.snapAdapter.stepper.stepCount);
                 console.log('------');
-                console.log(oldState.time);
-                console.log(Date.now());
+                //console.log(oldState.time);
+                //console.log(Date.now());
                 console.log(ballDir);
                 console.log(oldState.ballDir);
                 console.log('Ball does not turn on touching paddle!');
                 t.reportCase('ballTouchingPaddleBounce', false);
             }
         },
+        stateSaver: (t) => {
+            console.log(`dir:${t.getSpriteByName('Ball', false).dir}`);
+            console.log(t.snapAdapter.stepper.stepCount);
+            return {
+                ballDir: t.getSpriteByName('Ball', false).dir, 
+                ballX: t.getSpriteByName('Ball', false).posX,
+                ballY: t.getSpriteByName('Ball', false).posY,
+                time: Date.now()}
+        },
+        delay: 0,
+        once: false,
+        debounce: true,
+        addOnStart: false
+    }, */
+    {
+        name: 'ballTouchingPaddleBounce',
+        precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
+        callback: (t, oldState) => {
+            const dirB = t.getSpriteByName('Ball').dir;
+            const xB = t.getSpriteByName('Ball').posX;
+            const yB = t.getSpriteByName('Ball').posY;
+            const dirA = oldState.ballDir;
+            const xA = oldState.ballX;
+            const yA = oldState.ballY;
+            console.log("dirA: ", dirA, 'dirB: ', dirB);
+
+            //const ballY = t.getSpriteByName('Ball').posY;
+            const kA = 1/(Math.tan(dirA / 180 * Math.PI));
+            const kB = 1/(Math.tan(dirB / 180 * Math.PI));
+
+            const x = (yB - yA - xB*kB + xA*kA )/(kA - kB);
+            console.log(`A line:  y = ${kA} (x - ${xA}) + ${yA}`);
+            console.log(`B line:  y = ${kB} (x - ${xB}) + ${yB}`);
+
+            console.log('x: ', x);
+
+            const paddleX = t.getSpriteByName('Right Paddle').posX;
+            console.log('paddleX: ', paddleX);
+            if (dirB !== dirA) {
+                if (dirB + dirA === 360 && x > 229 && x < 235){
+                console.log('Ball does not turn on touching paddle, it turned on right edge');
+                t.reportCase('ballTouchingPaddleBounce', false);}
+                else {
+                    console.log('Ball turn on touching paddle');
+                    t.reportCase('ballTouchingPaddleBounce', true);
+                }
+            } else {
+                console.log('Ball does not turn on touching paddle!');
+                t.reportCase('ballTouchingPaddleBounce', false);
+            }
+        },
         stateSaver: (t) =>
-        ({ballDir: t.getSpriteByName('Ball', false).dir, 
+        ({ballDir: t.getSpriteByName('Ball', false).dir,
           ballX: t.getSpriteByName('Ball', false).posX,
           ballY: t.getSpriteByName('Ball', false).posY,
           time: Date.now()}),
         delay: 10,
         once: false,
         addOnStart: true
-    },
+    },  
     {
         name: 'ballTouchingPaddleScore',
         precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
@@ -362,6 +419,7 @@ const __Triggers =
         once: false,
         addOnStart: true
     },
+    
     {
         name: 'ballTouchingEdgeBounce',
         precondition: (t) => {
@@ -369,6 +427,8 @@ const __Triggers =
             return t.spriteIsOnEdge('Ball', ['left', 'top', 'bottom'])},
         callback: (t, oldState) => {
             const ballDir = t.getSpriteByName('Ball').dir
+            console.log('||')
+            console.log(t.snapAdapter.stepper.stepCount);
             if (ballDir !== oldState.ballDir) {
                 console.log('------');
                 console.log(oldState.time);
@@ -386,10 +446,14 @@ const __Triggers =
             }
         },
         stateSaver: (t) =>  {
+            console.log("!@");
+            console.log(t.snapAdapter.stepper.stepCount);
+            console.log(t.getSpriteByName('Ball', false).dir);
             return {ballDir: t.getSpriteByName('Ball', false).dir, time: Date.now()}
         },
-        delay: 10,
+        delay: 0,
         once: false,
+        debounce: true,
         addOnStart: true
     },
     // ball touching edge tests
@@ -412,7 +476,9 @@ const __Triggers =
                 t.reportCase('ballTouchingRightEdgeScore', false);
             }
         },
-        stateSaver: (t) => null,
+        stateSaver: (t) => {
+            //console.log(t.snapAdapter.stepper.stepCount);
+            return null;},
         delay: 10,
         once: false,
         addOnStart: true
@@ -474,9 +540,9 @@ const __Triggers =
         callback: (t, oldState) => {
             const paddleY = t.getSpriteByName('Right Paddle').posY;
             if (paddleY < oldState.ballY - 5) {
-                t.inputKey('up arrow', 1);
+                t.inputKey('up arrow', 2);
             } else if (paddleY > oldState.ballY + 5) {
-                t.inputKey('down arrow', 1);
+                t.inputKey('down arrow', 2);
             }
         },
         stateSaver: (t) => ({
@@ -485,7 +551,7 @@ const __Triggers =
         }),
         delay: 5,
         once: false,
-        addOnStart: false
+        addOnStart: true
     },
     {
         name: 'randomUpDownKey',
@@ -521,7 +587,7 @@ const __Triggers =
         stateSaver: (t) => null,
         delay: 100,
         once: false,
-        addOnStart: true
+        addOnStart: false
     },
     {
         name: 'upKey',

@@ -71,7 +71,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '30_8.xml') {
+const loadOnce = async function (projectName = '30_35.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -179,5 +179,5 @@ $('#run').on('click', run);
 $('#stop').on('click', () => {
     stop();
     sendTestResult(true);
-    //sendTrace(0);
+    sendTrace(0);
 });

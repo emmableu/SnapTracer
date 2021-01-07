@@ -1,7 +1,7 @@
 class Trigger {
 
     constructor (name, pre, callback, stateSaver = () => null,
-        delay = 0, once = true) {
+        delay = 0, once = true, debounce = false) {
 
         /**
          * The name identifier of the trigger
@@ -41,20 +41,49 @@ class Trigger {
         this.once = once;
 
         /**
-         * The pointer to the callback function in the queue
+         * whether consecutive steps satisfying the precondition will
+         * trigger only 1 callback at trailling edge
+         * @type{Boolean}
+         */
+        this.debounce = debounce;
+
+
+        // ======== States ==========
+        /**
+         * whether the precondition is true at the last step
+         * Note: this.continuing && !this._precondition => trailing edge
+         * @type{Boolean}
+         */
+        this._continuing = false;
+
+        /**
+         * saved state with stateSaver
+         * @type{Object}
+         */
+        this._savedState = null;
+
+        /**
+         * if the precondition is satisfied
+         * may be out dated for inactive triggers
+         * @type{Boolean}
+         */
+        this._precondition = false;
+
+        /**
+         * the pointer to the callback function in the queue
          * @type{Object}
          */
         this._callback = null;
 
         /**
-         * Whether the precondition is checked at every step
+         * whether the precondition is checked at every step
          * to initiate the callback
          * @type{Boolean}
          */
         this._active = true;
 
         /**
-         * Whether this trigger is still alive
+         * whether this trigger is still alive
          * Non-alive trigger will be discarded
          * @type{Boolean}
          * @private

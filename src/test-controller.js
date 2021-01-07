@@ -43,7 +43,8 @@ class TestController {
             tr.callback.bind(null, this),
             tr.stateSaver.bind(null, this),
             tr.delay,
-            tr.once
+            tr.once,
+            tr.debounce
         );
     }
 
@@ -55,13 +56,18 @@ class TestController {
         const tr = this.triggers.find(tri => tri.name === name);
         return this.bindTrigger(tr);
     }
-    // eslint-disable-next-line no-unused-vars
-    newTrigger (name, precondition, callback, stateSaver = t => null, delay = 0, once = true) {
+    
+    newTrigger (
+        name, precondition, callback,
+        // eslint-disable-next-line no-unused-vars
+        stateSaver = t => null,
+        delay = 0, once = true, debounce = false
+    ) {
         return new Trigger(
             name,
             precondition.bind(null, this),
             callback.bind(null, this),
-            stateSaver.bind(null, this), delay, once
+            stateSaver.bind(null, this), delay, once, debounce
         );
     }
 

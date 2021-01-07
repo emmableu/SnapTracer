@@ -74,15 +74,39 @@ class Stepper {
         this.stepCount++;
         // console.log(this.triggers);
 
-        // select triggers with precondition satisfied
-        const firingTriggers = this.triggers.filter(t => t.active)
-            .filter(t => t.precondition());
+        this.triggers.forEach(t => {
+            t._precondition = t.precondition();
+        });
+
+        // firing triggers are those whose callback will be added
+        const firingTriggers = this.triggers
+            .filter(t => t.active)
+            // either it is a regular trigger and precondition is satisfied
+            // or it is debounced trigger at trailling edge
+            .filter(t => (!t.debounce && t._precondition) ||
+                (t.debounce && t._continuing && !t._precondition));
+
+        // save states for triggers
+        this.triggers.filter(t => t.active)
+            // either it is a firing regular trigger
+            // or a debounced trigger at leading edge
+            .filter(t => (!t.debounce && t._precondition) ||
+                (t.debounce && !t._continuing && t._precondition))
+            .forEach(t => {
+                t._savedState = t.stateSaver();
+            });
+
+        // set continuing status for all triggers
+        this.triggers.forEach(t => {
+            t._continuing = t._precondition;
+        });
+
         // get the callbacks of these triggers
         const callbacks = firingTriggers
             .map(t => {
                 t.deactivate();
                 t._callback = new Callback(
-                    t.stateSaver(), // save the current state
+                    t._savedState,
                     t.delay,
                     t.callback,
                     t);
