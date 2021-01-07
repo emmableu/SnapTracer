@@ -174,11 +174,11 @@ const gradeAll = async function () {
             Grab.stat[test] = {success: 0, fail: 0};
         }
 
-        for (i = 0; i < Grab.testSet.length;) {
+        for (let j = 0; j < Grab.testSet.length;) {
             Grab.snapAdapter.reset();
             loadProject(projectXML);
-            loadTriggers(tests, Grab.testSet[i].triggerSwitches);
-            const durationNow = Grab.testSet[i].duration;
+            loadTriggers(tests, Grab.testSet[j].triggerSwitches);
+            const durationNow = Grab.testSet[j].duration;
             run();
             await new Promise(r => setTimeout(r, durationNow));
             stop();
@@ -190,8 +190,8 @@ const gradeAll = async function () {
                 // console.log(item.name);
                 Grab.stat[item.name][item.status ? 'success' : 'fail']++;
             }
-            if (Grab.snapAdapter.stepper.stepCount > Grab.testSet[i].stepRequirement) {
-                i++;
+            if (Grab.snapAdapter.stepper.stepCount > Grab.testSet[j].stepRequirement) {
+                j++;
             }
             // console.log(Grab.snapAdapter.stepper.stepCount);
             // console.log(`timeoutN:${timeoutN}`);
