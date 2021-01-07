@@ -13,9 +13,11 @@ app.use(express.urlencoded({ extended: true, limit: '50mb'}))
 const projectInputFolder = 'project_files'
 const scriptInputFolder = 'test_scripts'
 const outputFolder = 'dumped_traces'
-const testResultFile = 'test_result.csv'
+const testResultBaseName = 'test_result'
 
+var resultFileLength = 2;
 var results = [];
+var resultCnt = 0;
 var projectCnt = 0;
 
 app.get('/', (req, res) => {
@@ -28,7 +30,9 @@ app.get('/project_list', (req, res) => {
                   .filter(fileName => 
                           fs.lstatSync(path.join(projectInputFolder, fileName))
                             .isFile());
+  projectList.sort()
   projectCnt = projectList.length;
+  resultCnt = 0;
   res.json(projectList)
 
 })
@@ -85,18 +89,20 @@ app.post('/save_test_result/', (req, res) => {
     const n_tot = parseInt(n_succ) + parseInt(stat[testName].fail);
     result[testName] = `${n_succ}/${n_tot}`;
   }
+  resultCnt++;
   results.push(result);
-  console.log(`Recieved ${results.length} out of ${projectCnt} results`);
+  console.log(`Recieved ${resultCnt} out of ${projectCnt} results`);
   console.log(result);
-  if (results.length >= projectCnt) {
+  if (results.length >= resultFileLength || resultCnt >= projectCnt) {
     const Cols = Object.keys(result).map(k => ({id: k, title: k}))
     const csvWriter = csv_writer.createObjectCsvWriter({
-      path: testResultFile,
+      path: `${testResultBaseName}_${resultCnt}.csv`,
       header: Cols
     })
+    const resLen = results.length;
     csvWriter.writeRecords(results)
     .then(() => {
-        console.log('Test results generated');
+        console.log(`Test results of ${resLen} projects generated`);
     });
     results = [];
   }

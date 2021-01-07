@@ -594,14 +594,24 @@ const __Triggers =
         precondition: (t) => true,
         callback: (t, oldState) => {
             const toss = t.random(0, 1);
-            if (toss === 0) {
-                t.removeTriggerByName('upKey');
-                t.removeTriggerByName('downKey');
-                t.addTriggerByName('upKey');
-            } else if (toss === 1) {
+            if (t.getSpriteByName('Right Paddle').posY > 200) {
                 t.removeTriggerByName('upKey');
                 t.removeTriggerByName('downKey');
                 t.addTriggerByName('downKey');
+            } else if (t.getSpriteByName('Right Paddle').posY < -200) {
+                t.removeTriggerByName('upKey');
+                t.removeTriggerByName('downKey');
+                t.addTriggerByName('upKey');
+            } else {
+                if (toss === 0) {
+                    t.removeTriggerByName('upKey');
+                    t.removeTriggerByName('downKey');
+                    t.addTriggerByName('upKey');
+                } else if (toss === 1) {
+                    t.removeTriggerByName('upKey');
+                    t.removeTriggerByName('downKey');
+                    t.addTriggerByName('downKey');
+                }
             }
         },
         stateSaver: (t) => null,

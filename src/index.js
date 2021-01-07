@@ -9,10 +9,43 @@ window.$ = $;
 const Grab = window.Grab = {};
 Grab.stat = {};
 
-Grab.timePerTest = [30000, 20000, 20000, 20000];
-Grab.numTestPerProject = 4;
-Grab.coverageRequirement = 0.7;
-Grab.stepRequirement = 1000;
+Grab.testSet = [
+    {
+        duration: 10000,
+        triggerSwitches: {
+            randomDirection: false,
+            upKey: true
+        },
+        stepRequirement: 100
+    },
+    {
+        duration: 10000,
+        triggerSwitches: {
+            randomDirection: false,
+            downKey: true
+        },
+        stepRequirement: 100
+    },
+    {
+        duration: 30000,
+        triggerSwitches: {
+            followBall: true,
+            evadeWhenScored: true,
+            randomDirection: false
+        },
+        stepRequirement: 1000
+    },
+    {
+        duration: 20000,
+        stepRequirement: 1000
+    },
+    {
+        duration: 20000,
+        stepRequirement: 1000
+    }
+];
+
+//Grab.coverageRequirement = 0.7;
 
 const snapFrame = document.getElementsByTagName('iframe')[0];
 
@@ -73,7 +106,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '30_35.xml') {
+const loadOnce = async function (projectName = '30_8.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -135,26 +168,17 @@ const gradeAll = async function () {
         const projectXML = await getProject();
         const tests = await getTests();
         let coverage = 0;
-        let timeoutN = Grab.numTestPerProject;
               
         loadTriggers(tests);
         for (const test of Grab.testNames) {
             Grab.stat[test] = {success: 0, fail: 0};
         }
 
-        do {
+        for (i = 0; i < Grab.testSet.length;) {
             Grab.snapAdapter.reset();
             loadProject(projectXML);
-            if (timeoutN === 1) {
-                loadTriggers(tests, {
-                    followBall: true,
-                    evadeWhenScored: true,
-                    randomDirection: false
-                });
-            } else {
-                loadTriggers(tests);
-            }
-            const durationNow = Grab.timePerTest[timeoutN - 1];
+            loadTriggers(tests, Grab.testSet[i].triggerSwitches);
+            const durationNow = Grab.testSet[i].duration;
             run();
             await new Promise(r => setTimeout(r, durationNow));
             stop();
@@ -166,10 +190,12 @@ const gradeAll = async function () {
                 // console.log(item.name);
                 Grab.stat[item.name][item.status ? 'success' : 'fail']++;
             }
-            if (Grab.snapAdapter.stepper.stepCount > Grab.stepRequirement) {
-                timeoutN--;
+            if (Grab.snapAdapter.stepper.stepCount > Grab.testSet[i].stepRequirement) {
+                i++;
             }
-        } while (timeoutN > 0);
+            // console.log(Grab.snapAdapter.stepper.stepCount);
+            // console.log(`timeoutN:${timeoutN}`);
+        }
         await sendTestResult();
         await sendTrace(coverage);
     }
