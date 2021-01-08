@@ -11,23 +11,7 @@ Grab.stat = {};
 
 Grab.testSet = [
     {
-        duration: 7500,
-        triggerSwitches: {
-            randomDirection: false,
-            upKey: true
-        },
-        stepRequirement: 100
-    },
-    {
-        duration: 7500,
-        triggerSwitches: {
-            randomDirection: false,
-            downKey: true
-        },
-        stepRequirement: 100
-    },
-    {
-        duration: 35000,
+        duration: 30000,
         triggerSwitches: {
             followBall: true,
             randomDirection: false,
@@ -38,11 +22,7 @@ Grab.testSet = [
         stepRequirement: 1000
     },
     {
-        duration: 20000,
-        stepRequirement: 1000
-    },
-    {
-        duration: 20000,
+        duration: 30000,
         stepRequirement: 1000
     }
 ];
@@ -108,7 +88,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '30_8.xml') {
+const loadOnce = async function (projectName = '999_3.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
