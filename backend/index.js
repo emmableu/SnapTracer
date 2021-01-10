@@ -14,9 +14,11 @@ const projectInputFolder = 'project_files'
 const scriptInputFolder = 'test_scripts'
 const outputFolder = 'dumped_traces'
 const testResultBaseName = 'test_result'
+const codeStatBaseName = 'code_statistics'
 
 var resultFileLength = 100;
 var results = [];
+var codeStats = [];
 var resultCnt = 0;
 var projectCnt = 0;
 
@@ -89,10 +91,19 @@ app.post('/save_test_result/', (req, res) => {
     const n_tot = parseInt(n_succ) + parseInt(stat[testName].fail);
     result[testName] = `${n_succ}/${n_tot}`;
   }
+  const codeStat = {
+    name : req.body.projectName,
+    validBlocks : req.body.validBlocks,
+    deadBlocks : req.body.deadBlocks,
+    coverage : req.body.coverage
+  };
+
   resultCnt++;
   results.push(result);
+  codeStats.push(codeStat);
   console.log(`Recieved ${resultCnt} out of ${projectCnt} results`);
   console.log(result);
+  console.log(codeStat);
   if (results.length >= resultFileLength || resultCnt >= projectCnt) {
     const Cols = Object.keys(result).map(k => ({id: k, title: k}))
     const csvWriter = csv_writer.createObjectCsvWriter({
@@ -105,6 +116,22 @@ app.post('/save_test_result/', (req, res) => {
         console.log(`Test results of ${resLen} projects generated`);
     });
     results = [];
+
+    const Cols2 = [
+      { id: 'name', title: 'projectName'},
+      { id: 'validBlocks', title: 'validBlocks' },
+      { id: 'deadBlocks', title: 'deadBlocks' },
+      { id: 'coverage', title: 'coverage' }
+    ];
+    const csvWriter2 = csv_writer.createObjectCsvWriter({
+      path: `${codeStatBaseName}_${resultCnt}.csv`,
+      header: Cols2
+    })
+    csvWriter2.writeRecords(codeStats)
+    .then(() => {
+        console.log(`Code statistics of ${resLen} projects generated`);
+    });
+    codeStats = [];
   }
   res.send('ok');
 })

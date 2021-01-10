@@ -22,6 +22,11 @@ class Instrumenter {
          * @type {Set<String>} All covered blocks of the project
          */
         this.coveredBlocks = new Set();
+
+        /**
+         * @type {number}
+         */
+        this.deadCodeSize = 0;
     }
 
     /**
@@ -129,8 +134,14 @@ class Instrumenter {
             .concat([this.snapAdapter.stage]);
 
         const allScriptsRoot = objectWithScripts
-            .map(o => o.allScripts()).flat()
+            .map(o => o.scripts.children.slice()).flat()
             .filter(b => b instanceof HatBlockMorph);
+
+        const deadScriptsRoot = objectWithScripts
+            .map(o => o.scripts.children.slice()).flat()
+            .filter(b => !(b instanceof HatBlockMorph));
+
+        const deadScriptsObject = {projectBlocks: []};
 
         const traverse = function (node) {
             if (node instanceof BlockMorph) {
@@ -147,6 +158,16 @@ class Instrumenter {
         };
 
         allScriptsRoot.forEach(r => traverse.bind(this)(r));
+        deadScriptsRoot.forEach(r => traverse.bind(deadScriptsObject)(r));
+        this.deadCodeSize = deadScriptsObject.projectBlocks.length;
+    }
+
+    getValidBlockNumber () {
+        return this.projectBlocks.length;
+    }
+
+    getDeadBlockNumber () {
+        return this.deadCodeSize;
     }
 
     getCoverageRatio () {

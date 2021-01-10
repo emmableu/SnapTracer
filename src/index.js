@@ -88,7 +88,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '999_3.xml') {
+const loadOnce = async function (projectName = '999_0.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();
@@ -104,7 +104,7 @@ const run = function () {
     Grab.snapAdapter.stepper.run();
 };
 
-const sendTestResult = async function (singleRun) {
+const sendTestResult = async function (coverage, singleRun) {
     
     // For single run
     if (singleRun) {
@@ -123,7 +123,10 @@ const sendTestResult = async function (singleRun) {
     console.log(Grab.stat);
     await $.post(`${serverUrl}/save_test_result/`, {
         projectName: Grab.currentProjectName,
-        stat: Grab.stat
+        stat: Grab.stat,
+        validBlocks: Grab.snapAdapter.instrumenter.getValidBlockNumber(),
+        deadBlocks: Grab.snapAdapter.instrumenter.getDeadBlockNumber(),
+        coverage: coverage
     }).promise();
 };
 
@@ -178,8 +181,8 @@ const gradeAll = async function () {
             // console.log(Grab.snapAdapter.stepper.stepCount);
             // console.log(`timeoutN:${timeoutN}`);
         }
-        await sendTestResult();
-        await sendTrace(coverage);
+        await sendTestResult(coverage);
+        // await sendTrace(coverage);
     }
 
 };
@@ -193,6 +196,6 @@ $('#load').on('click', () => loadOnce());
 $('#run').on('click', run);
 $('#stop').on('click', () => {
     stop();
-    sendTestResult(true);
-    sendTrace(0);
+    sendTestResult(0, true);
+    // sendTrace(0);
 });

@@ -79,14 +79,23 @@
 
         <!-- other options -->
         <b-row class="mt-2 mb-2">
-            <b-col sm="7">
+            <b-col sm="5">
+            </b-col>
+            <b-col sm="2">
+                <b-form-checkbox :id="'debounce-' + tid" v-model="trigger.debounce">
+                    Debounce
+                </b-form-checkbox>
+                <b-tooltip :target="'debounce-'+ tid" triggers="hover focus">
+                    Check if the action should be taken only once for each segement of 
+                    consecutive steps where the condition is satisfied
+                </b-tooltip>
             </b-col>
             <b-col sm="2">
                 <b-form-checkbox :id="'one-time-' + tid" v-model="trigger.once">
-                    One-time
+                    One-Shot
                 </b-form-checkbox>
                 <b-tooltip :target="'one-time-'+ tid" triggers="hover focus">
-                    Check if the trigger only fires once
+                    Check if the trigger should be removed once the action is taken
                 </b-tooltip>
             </b-col>
             <b-col sm="3">
@@ -130,6 +139,7 @@ export default {
                 id: 0,
                 name: 'test', 
                 delay: '5',
+                debounce: false,
                 once: false, 
                 addOnStart: true  
             },
