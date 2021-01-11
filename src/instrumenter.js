@@ -150,7 +150,7 @@ class Instrumenter {
                     // use the line below for debugging
                     this.projectBlocks.push(node);
                 }
-                if (node.isCustomBlock) {
+                if (node.isCustomBlock && node.definition.body) {
                     traverse.bind(this)(node.definition.body.expression);
                 }
             }
