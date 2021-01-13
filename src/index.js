@@ -120,7 +120,7 @@ const loadProject = function (projectString) {
 
     console.log(Grab.snapAdapter.stage);
 };
-const loadOnce = async function (projectName = '999_17.xml') {
+const loadOnce = async function (projectName = '20_3.xml') {
 
     Grab.currentProjectName = projectName;
     const projectXML = await getProject();

@@ -236,7 +236,7 @@ const __Triggers =
         callback: function (t, oldState) {
             const ballX = t.getSpriteByName('Ball').posX;
             const ballY = t.getSpriteByName('Ball').posY;            
-            if (ballX === oldState.ballX || ballY === oldState.ballY)
+            if (ballX === oldState.ballX && ballY === oldState.ballY)
             {
                 console.log('------');
                 console.log(oldState.time);

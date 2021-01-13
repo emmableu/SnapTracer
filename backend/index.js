@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 
 app.get('/project_list', (req, res) => {
   results = [];
+  codeStats = [];
   projectList = fs.readdirSync(projectInputFolder)
                   .filter(fileName => 
                           fs.lstatSync(path.join(projectInputFolder, fileName))
