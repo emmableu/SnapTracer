@@ -120,6 +120,7 @@ class Trigger {
         if (this._callback) {
             this._callback.abort();
         }
+        this.deactivate();
         this._alive = false;
     }
     /**

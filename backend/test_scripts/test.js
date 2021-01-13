@@ -481,6 +481,7 @@ const __Triggers =
             return null;},
         delay: 10,
         once: false,
+        debounce: true,
         addOnStart: true
     },
     {
@@ -504,8 +505,9 @@ const __Triggers =
             t.addTriggerByName('waitToPressSpace');
         },
         stateSaver: (t) => null,
-        delay: 5,
+        delay: 0,
         once: false,
+        debounce: true,
         addOnStart: true
     },
     // controls
@@ -517,7 +519,7 @@ const __Triggers =
             t.addTriggerByName('pressSpaceKey');
         },
         stateSaver: (t) => null,
-        delay: 25,
+        delay: 50,
         once: true,
         addOnStart: true
     },
@@ -574,10 +576,9 @@ const __Triggers =
         callback: (t, oldState) => {
             t.removeTriggerByName('evadeBall');
             t.addTriggerByName('followBall');
-            t.addTriggerByName('pressSpaceKey');
         },
         stateSaver: (t) => null,
-        delay: 0,
+        delay: 25,
         once: false,
         addOnStart: false,
         debounce: true
