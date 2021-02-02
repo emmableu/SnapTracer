@@ -30,9 +30,10 @@ app.get('/project_list', (req, res) => {
   results = [];
   codeStats = [];
   projectList = fs.readdirSync(projectInputFolder)
-                  .filter(fileName => 
+                  .filter(fileName =>
                           fs.lstatSync(path.join(projectInputFolder, fileName))
-                            .isFile());
+                            .isFile() && fileName !==".DS_Store"
+                  );
   projectList.sort()
   projectCnt = projectList.length;
   resultCnt = 0;
@@ -41,23 +42,23 @@ app.get('/project_list', (req, res) => {
 })
 
 app.get('/project_file/:filename', (req, res) => {
-  const options = { 
-    root: path.join(__dirname) 
-  }; 
+  const options = {
+    root: path.join(__dirname)
+  };
   const fileName = req.params.filename;
   console.log(fileName)
-  res.sendFile(path.join(projectInputFolder, fileName), options, function (err) { 
-      if (err) { 
-         next(err); 
-      } else { 
-        console.log(`sent ${fileName} to the client`); 
-      } 
-  }); 
+  res.sendFile(path.join(projectInputFolder, fileName), options, function (err) {
+      if (err) {
+         next(err);
+      } else {
+        console.log(`sent ${fileName} to the client`);
+      }
+  });
 })
 
 app.get('/test_script', (req, res) => {
   const scriptName = 'test.js'
-  fs.readFile(`${scriptInputFolder}/${scriptName}`, 'utf8' , 
+  fs.readFile(`${scriptInputFolder}/${scriptName}`, 'utf8' ,
   (err, data) => {
     if (err) {
       console.error(err)
