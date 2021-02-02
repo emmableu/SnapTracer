@@ -6,11 +6,11 @@ const TestController = require('./test-controller');
 
 window.$ = $;
 
-const Grab = window.Grab = {};
-Grab.stat = {};
+const SnapCheck = window.SnapCheck = {};
+SnapCheck.stat = {};
 
-Grab.lowConfidenceRetry = 1;
-Grab.testSet = [
+SnapCheck.lowConfidenceRetry = 1;
+SnapCheck.testSet = [
     {
         duration: 10000,
         triggerSwitches: {
@@ -59,7 +59,7 @@ Grab.testSet = [
     }
 ];
 
-//Grab.coverageRequirement = 0.7;
+//SnapCheck.coverageRequirement = 0.7;
 
 const snapFrame = document.getElementsByTagName('iframe')[0];
 
@@ -80,16 +80,16 @@ const getTests = async function () {
 
 const loadTriggers = function (tests, addOnStart = null) {
 
-    Grab.testController = new TestController(Grab.snapAdapter);
+    SnapCheck.testController = new TestController(SnapCheck.snapAdapter);
     // eslint-disable-next-line no-eval
     const testScript = eval(tests);
-    Grab.testController.triggers = testScript.triggers;
-    Grab.testNames = testScript.testNames;
-    // Grab.testController.triggers
+    SnapCheck.testController.triggers = testScript.triggers;
+    SnapCheck.testNames = testScript.testNames;
+    // SnapCheck.testController.triggers
     //     .filter(tr => tr.reportInStatistics).map(tr => tr.name);
 
     if (addOnStart !== null) {
-        Grab.testController.triggers.forEach(tr => {
+        SnapCheck.testController.triggers.forEach(tr => {
             if (tr.name in addOnStart) {
                 tr.addOnStart = addOnStart[tr.name];
                 console.log(tr.name);
@@ -97,14 +97,14 @@ const loadTriggers = function (tests, addOnStart = null) {
             }
         });
     }
-    Grab.testController.triggers.filter(tr => tr.addOnStart).forEach(
-        tr => Grab.snapAdapter.stepper.addTrigger(Grab.testController.bindTrigger(tr))
+    SnapCheck.testController.triggers.filter(tr => tr.addOnStart).forEach(
+        tr => SnapCheck.snapAdapter.stepper.addTrigger(SnapCheck.testController.bindTrigger(tr))
     );
 };
 
 const getProject = async function () {
 
-    const projectName = Grab.currentProjectName;
+    const projectName = SnapCheck.currentProjectName;
     const projectXML = await Promise.resolve($.get({
         url: `${serverUrl}/project_file/${projectName}`,
         dataType: 'text'
@@ -116,48 +116,48 @@ const getProject = async function () {
 
 const loadProject = function (projectString) {
 
-    Grab.snapAdapter.loadProject(projectString);
+    SnapCheck.snapAdapter.loadProject(projectString);
 
-    console.log(Grab.snapAdapter.stage);
+    console.log(SnapCheck.snapAdapter.stage);
 };
 const loadOnce = async function (projectName = '20_3.xml') {
 
-    Grab.currentProjectName = projectName;
+    SnapCheck.currentProjectName = projectName;
     const projectXML = await getProject();
     const tests = await getTests();
-    Grab.snapAdapter.reset();
+    SnapCheck.snapAdapter.reset();
     loadProject(projectXML);
     loadTriggers(tests);
 
 };
 
 const run = function () {
-    Grab.snapAdapter.top.StageMorph.prototype.enablePenLogging = true;
-    Grab.snapAdapter.stepper.run();
+    SnapCheck.snapAdapter.top.StageMorph.prototype.enablePenLogging = true;
+    SnapCheck.snapAdapter.stepper.run();
 };
 
 const sendTestResult = async function (coverage, singleRun) {
-    
+
     // For single run
     if (singleRun) {
         const stat = {};
-        for (const test of Grab.testNames) {
+        for (const test of SnapCheck.testNames) {
             stat[test] = {success: 0, fail: 0};
         }
-        for (const item of Grab.testController.statistics) {
+        for (const item of SnapCheck.testController.statistics) {
         // console.log(item.name);
             stat[item.name][item.status ? 'success' : 'fail']++;
         }
-        Grab.stat = stat;
+        SnapCheck.stat = stat;
     }
-    
-    
-    console.log(Grab.stat);
+
+
+    console.log(SnapCheck.stat);
     await $.post(`${serverUrl}/save_test_result/`, {
-        projectName: Grab.currentProjectName,
-        stat: Grab.stat,
-        validBlocks: Grab.snapAdapter.instrumenter.getValidBlockNumber(),
-        deadBlocks: Grab.snapAdapter.instrumenter.getDeadBlockNumber(),
+        projectName: SnapCheck.currentProjectName,
+        stat: SnapCheck.stat,
+        validBlocks: SnapCheck.snapAdapter.instrumenter.getValidBlockNumber(),
+        deadBlocks: SnapCheck.snapAdapter.instrumenter.getDeadBlockNumber(),
         coverage: coverage
     }).promise();
 };
@@ -165,67 +165,67 @@ const sendTestResult = async function (coverage, singleRun) {
 const sendTrace = async function (coverage) {
     const i = 0;
     await $.post(`${serverUrl}/save_trace/${i}`, {
-        projectName: Grab.currentProjectName,
+        projectName: SnapCheck.currentProjectName,
         coverage: coverage,
-        trace: JSON.stringify(Grab.snapAdapter.trace)
+        trace: JSON.stringify(SnapCheck.snapAdapter.trace)
     }).promise();
 };
 
 const stop = function () {
-    Grab.snapAdapter.stepper.stop();
+    SnapCheck.snapAdapter.stepper.stop();
 };
 
 
 const gradeAll = async function () {
-    Grab.projectList = await getProjectList();
-    for (let i = 0; i < Grab.projectList.length; i++) {
-        const currentProjectName = Grab.projectList[i];
-        Grab.currentProjectName = currentProjectName;
+    SnapCheck.projectList = await getProjectList();
+    for (let i = 0; i < SnapCheck.projectList.length; i++) {
+        const currentProjectName = SnapCheck.projectList[i];
+        SnapCheck.currentProjectName = currentProjectName;
         console.log(currentProjectName);
         const projectXML = await getProject();
         const tests = await getTests();
         let coverage = 0;
-              
+
         loadTriggers(tests);
-        for (const test of Grab.testNames) {
-            Grab.stat[test] = {success: 0, fail: 0};
+        for (const test of SnapCheck.testNames) {
+            SnapCheck.stat[test] = {success: 0, fail: 0};
         }
-        
+
         let round = 0;
         let isLowConfidence = false;
         do {
-            for (let j = 0; j < Grab.testSet.length;) {
-                Grab.snapAdapter.reset();
+            for (let j = 0; j < SnapCheck.testSet.length;) {
+                SnapCheck.snapAdapter.reset();
                 loadProject(projectXML);
-                loadTriggers(tests, Grab.testSet[j].triggerSwitches);
-                const durationNow = Grab.testSet[j].duration;
+                loadTriggers(tests, SnapCheck.testSet[j].triggerSwitches);
+                const durationNow = SnapCheck.testSet[j].duration;
                 // seedRandom(currentProjectName + j.toString(), {global: true});
                 run();
                 await new Promise(r => setTimeout(r, durationNow));
                 stop();
-                const coverageNow = Grab.snapAdapter.instrumenter.getCoverageRatio();
+                const coverageNow = SnapCheck.snapAdapter.instrumenter.getCoverageRatio();
                 console.log(coverage);
                 coverage = Math.max(coverage, coverageNow);
 
-                for (const item of Grab.testController.statistics) {
+                for (const item of SnapCheck.testController.statistics) {
                 // console.log(item.name);
-                    Grab.stat[item.name][item.status ? 'success' : 'fail']++;
+                    SnapCheck.stat[item.name][item.status ? 'success' : 'fail']++;
                 }
-                if (Grab.snapAdapter.stepper.stepCount > Grab.testSet[j].stepRequirement) {
+                if (SnapCheck.snapAdapter.stepper.stepCount > SnapCheck.testSet[j].stepRequirement) {
                     j++;
                 }
-            // console.log(Grab.snapAdapter.stepper.stepCount);
+            // console.log(SnapCheck.snapAdapter.stepper.stepCount);
             // console.log(`timeoutN:${timeoutN}`);
             }
-            isLowConfidence = Grab.testNames.some(test => {
-                const nSucc = Grab.stat[test].success;
-                const nFail = Grab.stat[test].fail;
+            isLowConfidence = SnapCheck.testNames.some(test => {
+                const nSucc = SnapCheck.stat[test].success;
+                const nFail = SnapCheck.stat[test].fail;
                 const nTot = nSucc + nFail;
                 const rSucc = nSucc / nTot;
                 return (rSucc >= 0.25 && rSucc <= 0.75) || nTot < 4;
             });
             round++;
-        } while (round <= Grab.lowConfidenceRetry && isLowConfidence);
+        } while (round <= SnapCheck.lowConfidenceRetry && isLowConfidence);
         await sendTestResult(coverage);
         // await sendTrace(coverage);
     }
@@ -233,7 +233,7 @@ const gradeAll = async function () {
 };
 
 snapFrame.onload = function () {
-    Grab.snapAdapter = new SnapAdapter(this.contentWindow);
+    SnapCheck.snapAdapter = new SnapAdapter(this.contentWindow);
 
 };
 $('#grade-all').on('click', gradeAll);
