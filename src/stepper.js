@@ -118,6 +118,8 @@ class Stepper {
         // add all activated callbacks to the callback queues
         this._callbacks.unshift(...callbacks);
 
+        // console.log('this._callbacks: ', this._callbacks);
+
         // fire callback if delay reaches 0
         this._callbacks.forEach(c => c.countdown());
 

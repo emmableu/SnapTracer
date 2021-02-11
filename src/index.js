@@ -12,11 +12,15 @@ SnapCheck.stat = {};
 SnapCheck.lowConfidenceRetry = 1;
 
 SnapCheck.inputSet = [
-    // {name: ['empty+space', 'upKey'],
+    // {name: ['empty+space', 'upKey', 'threeSecStateUnchanged'],
     //     duration: '10000'},
-    // {name: ['empty+space', 'downKey'],
+    // {name: ['empty+space', 'downKey', 'threeSecStateUnchanged'],
     //     duration: '10000'},
-    {name: ['empty+space', 'followBall'],
+    // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
+    //     duration: '15000'},
+    // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
+    //     duration: '15000'},
+    {name: ['empty+space', 'randomDirection', 'threeSecStateUnchanged'],
         duration: '20000'}
         ];
 //SnapCheck.coverageRequirement = 0.7;
@@ -125,6 +129,24 @@ const stop = function () {
     SnapCheck.snapAdapter.stepper.stop();
 };
 
+const exitCondition = (r, curDuration) => {
+    console.log("SnapCheck.testController.statistics: ", SnapCheck.testController.statistics);
+    const timeOutCall = setTimeout(r, curDuration);
+    const myInterval= setInterval(()=> {
+        const threeSecUnChangedStat = SnapCheck.testController.statistics.filter((r) => {
+           return r.name === 'threeSecStateUnchanged'
+        });
+
+        console.log('SnapCheck.stat[\'threeSecStateUnchanged\']: ', threeSecUnChangedStat);
+        if (threeSecUnChangedStat[threeSecUnChangedStat.length-1].status) {
+            clearTimeout(timeOutCall);
+            clearInterval(myInterval);
+            r();
+            console.log("interval and timeout cleared")
+        }
+    }, 500);
+
+};
 
 const traceAll = async function () {
     SnapCheck.projectList = await getProjectList();
@@ -150,13 +172,13 @@ const traceAll = async function () {
             const curDuration = input.duration;
             console.log('start run: ', ((Date.now() - SnapCheck.snapAdapter.startTime) / 1000).toFixed(3));
             run();
-            await new Promise(r => setTimeout(r, curDuration));
+            await new Promise((r) => exitCondition(r, curDuration));
             stop();
             const coverageNow = SnapCheck.snapAdapter.instrumenter.getCoverageRatio();
             coverage = Math.max(coverage, coverageNow);
         }
         console.log('completed');
-        // await sendTestResult(coverage);
+        await sendTestResult(coverage);
         // await sendTrace(coverage);
     }
 

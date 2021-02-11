@@ -5,11 +5,41 @@ const __testNames = [
     'threeSecStateUnchanged',
     'followBall',
     'upKey',
-    'downKey'
+    'downKey',
+    'randomDirection'
 ];
 const __Triggers =
     [
-
+        {
+            name: 'randomDirection',
+            precondition: (t) => true,
+            callback: (t, oldState) => {
+                const toss = t.random(0, 1);
+                if (t.getSpriteByName('Right Paddle').posY > 200) {
+                    t.removeTriggerByName('upKey');
+                    t.removeTriggerByName('downKey');
+                    t.addTriggerByName('downKey');
+                } else if (t.getSpriteByName('Right Paddle').posY < -200) {
+                    t.removeTriggerByName('upKey');
+                    t.removeTriggerByName('downKey');
+                    t.addTriggerByName('upKey');
+                } else {
+                    if (toss === 0) {
+                        t.removeTriggerByName('upKey');
+                        t.removeTriggerByName('downKey');
+                        t.addTriggerByName('upKey');
+                    } else if (toss === 1) {
+                        t.removeTriggerByName('upKey');
+                        t.removeTriggerByName('downKey');
+                        t.addTriggerByName('downKey');
+                    }
+                }
+            },
+            stateSaver: (t) => null,
+            delay: 100,
+            once: false,
+            addOnStart: true
+        },
         {
             name: 'empty+space',
             precondition: (t) => true,
@@ -29,7 +59,7 @@ const __Triggers =
             callback: (t, oldState) => {
                const paddle = t.snapAdapter.state.getSpriteByName('Right Paddle'),
                     ball = t.snapAdapter.state.getSpriteByName('Ball');
-
+                console.log('checking threeSecStateUnchanged');
                let unChanged = true;
                for (const attr of ['posX', 'posY']){
                    if (paddle[attr] !== oldState.paddle[attr] ||
@@ -46,9 +76,9 @@ const __Triggers =
                     ball: t.snapAdapter.state.getSpriteByName('Ball')
                 }
             },
-            delay: 3000,
-            once: true,
-            addOnStart: false
+            delay: 100,
+            once: false,
+            addOnStart: true
         },
 
         {
@@ -62,6 +92,7 @@ const __Triggers =
             once: true,
             addOnStart: false
         },
+
         {
             name: 'followBall',
             precondition: (t) => true,
