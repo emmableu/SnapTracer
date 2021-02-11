@@ -57,7 +57,7 @@ app.get('/project_file/:filename', (req, res) => {
 })
 
 app.get('/test_script', (req, res) => {
-  const scriptName = 'test.js'
+  const scriptName = 'trace-inputs.js'
   fs.readFile(`${scriptInputFolder}/${scriptName}`, 'utf8' ,
   (err, data) => {
     if (err) {
@@ -67,6 +67,19 @@ app.get('/test_script', (req, res) => {
     console.log(`sent ${scriptName} to the client`)
     res.send(data)
   })
+})
+
+app.get('/input_script', (req, res) => {
+  const scriptName = 'trace-inputs.js'
+  fs.readFile(`${scriptInputFolder}/${scriptName}`, 'utf8' ,
+      (err, data) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        console.log(`sent ${scriptName} to the client`)
+        res.send(data)
+      })
 })
 
 app.post('/save_trace/:i', (req, res) => {

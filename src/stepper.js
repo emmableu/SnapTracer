@@ -32,7 +32,7 @@ class Stepper {
          * @type {number}
          */
         this._stepDuration = 50;
-        
+
 
     }
 
@@ -72,6 +72,9 @@ class Stepper {
     step () {
 
         this.stepCount++;
+        // console.log('this.stepCount: ', this.stepCount);
+        // console.log('this.snapAdapter.trace.length: ', this.snapAdapter.trace.length);
+        // console.log('this.snapAdapter.coveredBlocks', this.snapAdapter.instrumenter.coveredBlocks);
         // console.log(this.triggers);
 
         this.triggers.forEach(t => {
@@ -123,7 +126,7 @@ class Stepper {
         this.triggers = this.triggers.filter(t => t.alive);
 
         this.snapAdapter.inputs.tick();
-        
+
         /* this.snapAdapter.resume();
         return new Promise(resolve =>
             setTimeout(() => {

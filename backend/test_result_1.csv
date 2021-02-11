@@ -1,0 +1,2 @@
+name,paddleMoveUp,paddleMoveUpBoundary,paddleMoveDown,paddleMoveDownBoundary,ballNotMoveBeforeSpace,spaceBallMove,ballTouchingPaddleBounce,ballTouchingPaddleScore,ballTouchingEdgeBounce,ballTouchingRightEdgeScore,ballTouchingRightEdgeReset
+10_2.xml,0/620,0/0,0/653,0/0,112/112,0/8,0/0,0/0,0/0,0/0,0/0

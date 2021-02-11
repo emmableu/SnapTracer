@@ -21,6 +21,30 @@ class Sprite {
         this.touching = this.calcTouching(spriteMorph);
         this.variables = _.cloneDeep(spriteMorph.variables.vars);
         this.edgesTouched = this.calcEdgesTouched(spriteMorph);
+        const stageVariables = this.snapAdapter.ide.globalVariables.vars;
+
+        this.snapAdapter.trace.push({
+            clockTime: ((Date.now() - this.snapAdapter.startTime) / 1000).toFixed(3),
+            step: this.snapAdapter.stepper.stepCount,
+            sprite: {
+                name: this.name,
+                posX: this.posX,
+                posY: this.posY,
+                size: this.size,
+                dir: this.dir,
+                dirX: this.dirX,
+                dirY: this.dirY,
+                touching: this.touching,
+                variables: this.variables,
+                edgesTouched: this.edgesTouched
+            },
+            keysDown: this.snapAdapter.inputs.keysDown,
+            stageVariables: Object.keys(stageVariables)
+                .map(v => ({
+                    name: v,
+                    value: stageVariables[v].value
+                }))
+        });
     }
 
     // FIXME: should be static

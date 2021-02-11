@@ -31,6 +31,9 @@ class State {
          * @type{a Sprite}
          */
         if (isCur) {
+            // console.log('this.spriteCache: ', this.spriteCache);
+            // console.log('this.spriteCache.cur: ', this.spriteCache.cur);
+            window.cur = this.spriteCache.cur;
             return this.spriteCache.cur.getSpriteByName(name);
         }
         return this.spriteCache.old.getSpriteByName(name);

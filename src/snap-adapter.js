@@ -73,10 +73,13 @@ class SnapAdapter {
      * load project from raw XML String
      * @param {string} projectString raw XML string.
      */
-    loadProject (projectString) {
+    async loadProject (projectString) {
         this.ide.rawOpenProjectString(projectString);
         this.ide.toggleAppMode(true);
+        await new Promise(r => setTimeout(r, 2000));
+        console.log('project loaded');
         this.instrumenter.detectProjectBlocks();
+        return;
     }
 
     async start () {

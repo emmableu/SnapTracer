@@ -1,0 +1,2 @@
+name,paddleMoveUp,paddleMoveUpBoundary,paddleMoveDown,paddleMoveDownBoundary,ballNotMoveBeforeSpace,spaceBallMove,ballTouchingPaddleBounce,ballTouchingPaddleScore,ballTouchingEdgeBounce,ballTouchingRightEdgeScore,ballTouchingRightEdgeReset
+999_29.xml,453/474,881/881,385/406,194/194,134/134,8/8,160/161,161/161,71/71,19/19,53/53

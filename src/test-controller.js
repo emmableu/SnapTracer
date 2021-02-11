@@ -13,8 +13,9 @@ class TestController {
         this.removeTriggerByName = this.snapAdapter.stepper.removeTriggerByName.bind(this.snapAdapter.stepper);
         this.clearTriggers = this.snapAdapter.stepper.clearTriggers.bind(this.snapAdapter.stepper);
         this.state = this.snapAdapter.state;
-        this.getSpriteByName = this.snapAdapter.state.getSpriteByName
-            .bind(this.snapAdapter.state);
+        // this.getSpriteByName = this.snapAdapter.state.getSpriteByName
+        //     .bind(this.snapAdapter.state);
+        //the above should be deleted because the function does not update itself when the state gets updated.
         this.spriteIsTouching = this.snapAdapter.state.spriteIsTouching.bind(this.snapAdapter.state);
         this.spriteIsOnEdge = this.snapAdapter.state.spriteIsOnEdge.bind(this.snapAdapter.state);
         this.isKeyDown = this.snapAdapter.inputs.isKeyDown.bind(this.snapAdapter.inputs);
@@ -56,7 +57,7 @@ class TestController {
         const tr = this.triggers.find(tri => tri.name === name);
         return this.bindTrigger(tr);
     }
-    
+
     newTrigger (
         name, precondition, callback,
         // eslint-disable-next-line no-unused-vars

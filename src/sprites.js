@@ -13,6 +13,7 @@ class Sprites {
     update (){
         const allSpriteMorphs = this.getAllSpriteMorphs();
         for (const s of allSpriteMorphs){
+            // console.log('s.name: ', s.name);
             this.data[s.name] = new Sprite(this.snapAdapter, s);
         }
     }

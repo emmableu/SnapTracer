@@ -43,40 +43,10 @@ class Instrumenter {
 
         extend(this.snapAdapter.top.Process, 'evaluateBlock',
             function (base, block, argCount) {
-                const sprite = this.context.receiver;
-                const stageVariables = that.snapAdapter.ide.globalVariables.vars;
-                //that.coveredBlocks.add(that._boundsAsId(block.bounds));
-                // use the line below for debugging
                 that.coveredBlocks.add(block);
-                that.trace.push({
-                    clockTime: ((Date.now() - that.snapAdapter.startTime) / 1000).toFixed(3),
-                    step: that.snapAdapter.stepper.stepCount,
-                    sprite: {
-                        name: sprite.name,
-                        x: sprite.xPosition(),
-                        y: sprite.yPosition(),
-                        size: sprite.size,
-                        direction: sprite.direction(),
-                        touching: that.snapAdapter.stage.children
-                            .filter(c => (c !== sprite))
-                            .filter(c => (c instanceof that.snapAdapter.top.SpriteMorph))
-                            .filter(c => sprite.isTouching(c))
-                            .map(c => c.name),
-                        variables: _.cloneDeep(sprite.variables.vars)
-                    },
-                    // TODO: convert to array of keys which maps to true
-                    keysDown: that.snapAdapter.inputs.keysDown, //_.cloneDeep(that.stage.keysPressed),
-                    stageVariables: Object.keys(stageVariables)
-                        .map(v => ({
-                            name: v,
-                            value: stageVariables[v].value
-                        }))
-                });
                 base.call(this, block, argCount);
-                // eslint-disable-next-line semi
-            })
 
-
+            });
         extend(this.snapAdapter.top.StageMorph, 'step',
             function (base) {
                 if (that.snapAdapter.stepper.running) {
@@ -87,7 +57,7 @@ class Instrumenter {
                     that.snapAdapter.state.update();
                 }
             });
-        
+
         /* Below can only be used after project is loaded
         const stageStep = this.snapAdapter.stage.step;
         this.snapAdapter.stage.step = function () {
@@ -101,7 +71,7 @@ class Instrumenter {
         };
         */
     }
-    
+
     /*
      * Encode bounds of a block as its Id
      * @access{private}
@@ -120,7 +90,7 @@ class Instrumenter {
     }
 
     detectProjectBlocks () {
-        
+
         // this.projectBlocks.clear();
         // use the line below for debugging
         this.projectBlocks = [];
