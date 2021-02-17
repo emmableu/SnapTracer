@@ -4,6 +4,7 @@ const __testNames = [
   'empty+space',
     'threeSecStateUnchanged',
     'followBall',
+    'evadeBall',
     'upKey',
     'downKey',
     'randomDirection'
@@ -93,6 +94,7 @@ const __Triggers =
             addOnStart: false
         },
 
+
         {
             name: 'followBall',
             precondition: (t) => true,
@@ -114,6 +116,34 @@ const __Triggers =
             delay: 5,
             once: false,
             addOnStart: false
+        },
+
+        {
+            name: 'evadeBall',
+            precondition: (t) => true,
+            callback: (t, oldState) => {
+                t.removeTriggerByName('followBall');
+                const paddleY = t.snapAdapter.state.getSpriteByName('Right Paddle').posY;
+                if (paddleY < oldState.ballY - 5) {
+                    t.inputKey('down arrow', 5);
+                } else if (paddleY > oldState.ballY + 5) {
+                    t.inputKey('up arrow', 5);
+                }
+                else{
+                    t.inputKey('up arrow', 5);
+                }
+
+            },
+            stateSaver: (t) => {
+                return {
+                    ballY: t.snapAdapter.state.getSpriteByName('Ball').posY,
+                    time: Date.now()
+                }
+            },
+            //delay defines how many steps to pass by until this event happens again.
+            delay: 200,
+            once: false,
+            addOnStart: true
         },
 
         {

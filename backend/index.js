@@ -34,7 +34,7 @@ app.get('/project_list', (req, res) => {
                           fs.lstatSync(path.join(projectInputFolder, fileName))
                             .isFile() && fileName !==".DS_Store"
                   );
-  projectList.sort()
+  projectList.sort().reverse();
   projectCnt = projectList.length;
   resultCnt = 0;
   res.json(projectList)

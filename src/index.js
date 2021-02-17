@@ -13,15 +13,24 @@ SnapCheck.lowConfidenceRetry = 1;
 
 SnapCheck.inputSet = [
     // {name: ['empty+space', 'upKey', 'threeSecStateUnchanged'],
-    //     duration: '10000'},
+    //     duration: '15000'},
     // {name: ['empty+space', 'downKey', 'threeSecStateUnchanged'],
-    //     duration: '10000'},
-    // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
     //     duration: '15000'},
     // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
     //     duration: '15000'},
-    {name: ['empty+space', 'randomDirection', 'threeSecStateUnchanged'],
-        duration: '20000'}
+    // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
+    //     duration: '15000'},
+    // {name: ['empty+space', 'randomDirection', 'threeSecStateUnchanged'],
+    //     duration: '20000'},
+
+    {name: ['empty+space', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
+        duration: '15000'},
+
+    {name: ['empty+space', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
+        duration: '15000'},
+    {name: ['empty+space', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
+        duration: '15000'}
+
         ];
 //SnapCheck.coverageRequirement = 0.7;
 
@@ -116,8 +125,7 @@ const sendTestResult = async function (coverage, singleRun) {
     }).promise();
 };
 
-const sendTrace = async function (coverage) {
-    const i = 0;
+const sendTrace = async function (coverage, i) {
     await $.post(`${serverUrl}/save_trace/${i}`, {
         projectName: SnapCheck.currentProjectName,
         coverage: coverage,
@@ -137,14 +145,16 @@ const exitCondition = (r, curDuration) => {
            return r.name === 'threeSecStateUnchanged'
         });
 
-        console.log('SnapCheck.stat[\'threeSecStateUnchanged\']: ', threeSecUnChangedStat);
-        if (threeSecUnChangedStat[threeSecUnChangedStat.length-1].status) {
-            clearTimeout(timeOutCall);
-            clearInterval(myInterval);
-            r();
-            console.log("interval and timeout cleared")
+        // console.log('SnapCheck.stat[\'threeSecStateUnchanged\']: ', threeSecUnChangedStat);
+        if (threeSecUnChangedStat.length > 0) {
+            if (threeSecUnChangedStat[threeSecUnChangedStat.length - 1].status) {
+                clearTimeout(timeOutCall);
+                clearInterval(myInterval);
+                r();
+                console.log("interval and timeout cleared")
+            }
         }
-    }, 500);
+    }, 1000);
 
 };
 
@@ -153,16 +163,19 @@ const traceAll = async function () {
     for (let i = 0; i < SnapCheck.projectList.length; i++) {
         console.log('i: ', i);
         const currentProjectName = SnapCheck.projectList[i];
+        console.log('currentProjectName: ', currentProjectName);
         SnapCheck.currentProjectName = currentProjectName;
-        const traceInputs = await getInputs();
-        loadInputTriggers(traceInputs);
-        let coverage = 0;
+
 
 
         const projectXML = await getProject();
 
-        for (const input of SnapCheck.inputSet){
-            console.log('----------------start loop--------------------------------');
+        for (const [inputIndex, input] of SnapCheck.inputSet.entries()){
+            const traceInputs = await getInputs();
+            loadInputTriggers(traceInputs);
+            let coverage = 0;
+            console.log('----------------start loop  ', inputIndex,
+                '  --------------------------------');
             console.log('input: ', input);
             await loadProject(projectXML);
             SnapCheck.snapAdapter.reset();
@@ -176,10 +189,11 @@ const traceAll = async function () {
             stop();
             const coverageNow = SnapCheck.snapAdapter.instrumenter.getCoverageRatio();
             coverage = Math.max(coverage, coverageNow);
+            console.log('completed');
+            // await sendTestResult(coverage);
+            await sendTrace(coverage, inputIndex+5);
         }
-        console.log('completed');
-        await sendTestResult(coverage);
-        // await sendTrace(coverage);
+
     }
 
 };
