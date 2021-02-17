@@ -12,16 +12,16 @@ SnapCheck.stat = {};
 SnapCheck.lowConfidenceRetry = 1;
 
 SnapCheck.inputSet = [
-    // {name: ['empty+space', 'upKey', 'threeSecStateUnchanged'],
-    //     duration: '15000'},
-    // {name: ['empty+space', 'downKey', 'threeSecStateUnchanged'],
-    //     duration: '15000'},
-    // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
-    //     duration: '15000'},
-    // {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
-    //     duration: '15000'},
-    // {name: ['empty+space', 'randomDirection', 'threeSecStateUnchanged'],
-    //     duration: '20000'},
+    {name: ['empty+space', 'upKey', 'threeSecStateUnchanged'],
+        duration: '15000'},
+    {name: ['empty+space', 'downKey', 'threeSecStateUnchanged'],
+        duration: '15000'},
+    {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
+        duration: '15000'},
+    {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
+        duration: '15000'},
+    {name: ['empty+space', 'randomDirection', 'threeSecStateUnchanged'],
+        duration: '20000'},
 
     {name: ['empty+space', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
         duration: '15000'},
@@ -154,7 +154,7 @@ const exitCondition = (r, curDuration) => {
                 console.log("interval and timeout cleared")
             }
         }
-    }, 1000);
+    }, 5000);
 
 };
 
@@ -191,7 +191,7 @@ const traceAll = async function () {
             coverage = Math.max(coverage, coverageNow);
             console.log('completed');
             // await sendTestResult(coverage);
-            await sendTrace(coverage, inputIndex+5);
+            await sendTrace(coverage, inputIndex);
         }
 
     }
